@@ -1,0 +1,1748 @@
+<title>オートボンド</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap">
+<style>
+:root{
+  --ink:#070c0f;
+  --panel:#0e1720;
+  --panel2:#13202b;
+  --line:#223644;
+  --line2:#2f4a5c;
+  --text:#dde8ee;
+  --dim:#8ba3b2;
+  --faint:#5d7484;
+  /* 炎色反応パレット */
+  --na:#ff9a2e;      /* ナトリウム橙 */
+  --cu:#31d6a0;      /* 銅 緑 */
+  --k:#a883ff;       /* カリウム 紫 */
+  --sr:#ff5f57;      /* ストロンチウム 紅 */
+  --nonmetal:#4fc9e8;
+  --halogen:#b6dc4a;
+  --alkali:#ff9a2e;
+  --alkaline:#ff7a6a;
+  --metal:#e3a63c;
+  --metalloid:#8fa6b5;
+  --precious:#cfd6dd;
+  --support:#ff5fbf;
+  --noble:#a883ff;
+  --special:#e8e2d4;
+  --good:#31d6a0;
+  --bad:#ff5f57;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;background:
+    radial-gradient(900px 500px at 50% -10%, #142230 0%, transparent 60%),
+    var(--ink);
+  color:var(--text);
+  font-family:"Noto Sans JP","Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;
+  font-size:14px;line-height:1.6;
+  -webkit-text-size-adjust:100%;
+}
+.wrap{max-width:980px;margin:0 auto;padding:0 16px;padding-block:20px 40px}
+h1,h2,h3{font-family:"Chakra Petch","Noto Sans JP",sans-serif;text-wrap:balance;margin:0}
+.num{font-family:"Chakra Petch",monospace;font-variant-numeric:tabular-nums}
+.lbl{font-family:"Chakra Petch",sans-serif;letter-spacing:.14em;text-transform:uppercase;font-size:11px;color:var(--faint)}
+button{font-family:inherit;font-size:13px;color:var(--text);background:var(--panel2);
+  border:1px solid var(--line2);padding:9px 16px;cursor:pointer;border-radius:2px;transition:.12s}
+button:hover:not(:disabled){background:#1b2d3b;border-color:var(--na);color:#fff}
+button:disabled{opacity:.32;cursor:not-allowed}
+button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--na);outline-offset:2px}
+.primary{background:var(--na);border-color:var(--na);color:#241000;font-weight:700}
+.primary:hover:not(:disabled){background:#ffae55;border-color:#ffae55;color:#241000}
+
+/* ---------- タイトル ---------- */
+#title-screen{display:flex;flex-direction:column;gap:26px}
+.masthead{border-bottom:1px solid var(--line);padding-bottom:20px}
+.masthead .eyebrow{font-family:"Chakra Petch";letter-spacing:.34em;font-size:11px;color:var(--na)}
+.masthead h1{font-size:clamp(36px,9vw,68px);font-weight:700;letter-spacing:.02em;line-height:1;margin:8px 0 12px}
+.masthead h1 span{color:var(--na)}
+.masthead p{margin:0;color:var(--dim);max-width:62ch}
+.rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:1px;background:var(--line)}
+.rule{background:var(--panel);padding:16px}
+.rule b{display:block;font-family:"Chakra Petch";color:var(--cu);font-size:13px;letter-spacing:.06em;margin-bottom:5px}
+.rule p{margin:0;font-size:12.5px;color:var(--dim);line-height:1.7}
+.decks{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.pickhead{grid-column:1/-1;font-family:"Chakra Petch";letter-spacing:.14em;font-size:11px;
+  color:var(--faint);border-top:1px solid var(--line);padding-top:12px;margin-top:2px}
+.deckcard{position:relative}
+.deckcard.saved{border-left:3px solid var(--cu)}
+.deckcard .mix{font-family:"Chakra Petch";font-size:11px;color:var(--dim);letter-spacing:.04em;
+  display:block;margin-top:5px;word-break:break-word}
+.deckcard .del{position:absolute;top:6px;right:6px;padding:0 7px;font-size:13px;line-height:1.6;
+  border:1px solid var(--line);color:var(--faint);cursor:pointer;border-radius:2px;background:transparent}
+.deckcard .del:hover{border-color:var(--bad);color:var(--bad);background:#1e1210}
+.deckcard .del.armed{border-color:var(--bad);color:var(--bad);background:#2a1210;
+  font-size:11px;font-family:"Chakra Petch";letter-spacing:.04em;padding:0 6px}
+.deckcard .dirty{color:var(--na);font-size:10.5px;font-family:"Chakra Petch";letter-spacing:.06em}
+#b-name{background:#08111a;border:1px solid var(--line2);color:var(--text);padding:7px 10px;
+  font-family:inherit;font-size:13px;border-radius:2px;width:150px}
+#b-name:focus{outline:1px solid var(--na);border-color:var(--na)}
+#b-msg{font-size:12px;font-family:"Chakra Petch";letter-spacing:.04em}
+.deckcard{background:var(--panel);border:1px solid var(--line);padding:14px;cursor:pointer;text-align:left;border-radius:2px}
+.deckcard:hover{border-color:var(--na)}
+.deckcard[aria-pressed="true"]{border-color:var(--na);background:#1a2530;box-shadow:inset 3px 0 0 var(--na)}
+.deckcard h3{font-size:16px;margin-bottom:4px}
+.deckcard small{color:var(--faint);font-size:11.5px;line-height:1.6;display:block}
+
+/* ---------- 盤面 ---------- */
+#game-screen{display:none;flex-direction:column;gap:12px}
+.side{border:1px solid var(--line);background:linear-gradient(180deg,var(--panel) 0%,#0b1319 100%);padding:12px}
+.side.me{border-color:var(--line2)}
+.sidehead{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:10px}
+.who{font-family:"Chakra Petch";font-weight:700;letter-spacing:.1em;font-size:13px}
+.who.foe{color:var(--sr)}
+.who.mine{color:var(--na)}
+.hpbar{flex:1;min-width:120px;height:14px;background:#08111a;border:1px solid var(--line);position:relative;overflow:hidden}
+.hpfill{height:100%;transition:width .35s cubic-bezier(.2,.8,.3,1)}
+.hpbar.foe .hpfill{background:linear-gradient(90deg,#8b2b26,var(--sr))}
+.hpbar.mine .hpfill{background:linear-gradient(90deg,#9b5a12,var(--na))}
+.hpnum{font-family:"Chakra Petch";font-weight:700;font-size:15px;min-width:64px;text-align:right;font-variant-numeric:tabular-nums}
+.chips{display:flex;gap:5px;flex-wrap:wrap}
+.chip{font-size:11px;font-family:"Chakra Petch";letter-spacing:.06em;padding:2px 7px;border:1px solid;border-radius:999px}
+.chip.poison{color:#b6dc4a;border-color:#4d5c22;background:#1a2210}
+.chip.armor{color:var(--nonmetal);border-color:#1f4654;background:#0d1e26}
+.chip.corrode{color:var(--sr);border-color:#5c2422;background:#220f0e}
+.chip.stun{color:var(--k);border-color:#43317a;background:#150f26}
+.chip.aura{color:var(--support);border-color:#6b2251;background:#240d1c}
+
+/* 手札 */
+.hand{display:flex;flex-wrap:wrap;gap:8px;align-items:flex-end;min-height:118px}
+.hand.mini{min-height:82px;gap:6px}
+.mol{border:1px solid transparent;padding:3px;border-radius:3px;position:relative}
+.mol .cap{font-size:11px;font-family:"Chakra Petch";letter-spacing:.04em;color:var(--faint);
+  display:flex;justify-content:space-between;gap:8px;padding:1px 3px 3px;white-space:nowrap}
+.mol.clickable{cursor:pointer}
+.mol.clickable:hover{border-color:var(--line2);background:#101c25}
+.mol.stable .cap{color:var(--cu)}
+.mol.stable{background:#0d1c1a}
+.mol.frozen{box-shadow:inset 0 0 0 1px #2d5f7a}
+.mol.sel{border-color:var(--na)!important;background:#1e1609!important}
+.mol.targetable{border-color:var(--k);animation:pulse 1.2s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(168,131,255,.5)}50%{box-shadow:0 0 0 4px rgba(168,131,255,0)}}
+.molrow{display:flex;align-items:center}
+.card{width:58px;height:74px;background:var(--panel2);border:1px solid var(--line2);border-top:3px solid var(--c,var(--dim));
+  padding:4px;display:flex;flex-direction:column;justify-content:space-between;cursor:pointer;position:relative;
+  border-radius:2px;flex:none}
+.card:hover{background:#1b2d3b}
+.card{overflow:hidden}
+.card > div{position:relative;z-index:1}
+.card .atom{position:absolute;inset:0;z-index:0;color:var(--c,var(--dim));opacity:.3;
+  pointer-events:none;display:block}
+.card .atom svg{width:100%;height:100%;display:block}
+.card.mini .atom{opacity:.26}
+.card:hover .atom{opacity:.42}
+.card.sel{border-color:var(--na);background:#211808;box-shadow:0 0 0 1px var(--na)}
+.card .sym{font-family:"Chakra Petch";font-weight:700;font-size:23px;line-height:1;color:var(--c,var(--text))}
+.card .jp{font-size:9.5px;color:var(--dim);line-height:1.25;letter-spacing:-.02em}
+.card .foot{display:flex;justify-content:space-between;align-items:flex-end;font-family:"Chakra Petch";font-size:10px;color:var(--faint)}
+.card .pw{color:var(--text);font-weight:700}
+.card.sp{border-top-color:var(--special);background:#1d1d1a}
+.card.sp .sym{font-size:19px;color:var(--special)}
+.card.mini{width:42px;height:56px;padding:3px}
+.card.mini .sym{font-size:17px}
+.card.mini .jp,.card.mini .foot{display:none}
+.bond{width:17px;height:28px;flex:none;color:var(--cu);display:block}
+.bond svg{width:100%;height:100%;display:block;filter:drop-shadow(0 0 2.5px currentColor)}
+.hand.mini .bond{width:12px;height:22px}
+.mol.frozen .bond{color:#63c9ec}
+.mol.stable .bond{color:var(--cu)}
+.slot{width:58px;height:74px;border:1px dashed var(--line);border-radius:2px;flex:none;opacity:.5}
+.slot.mini{width:42px;height:56px}
+.mol.uv .cap{color:var(--k)}
+
+/* 操作列 */
+.bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:10px 12px;border:1px solid var(--line);background:var(--panel)}
+.hint{flex:1;min-width:180px;font-size:12.5px;color:var(--dim)}
+.hint b{color:var(--na)}
+.meta{display:flex;gap:14px;font-family:"Chakra Petch";font-size:11.5px;letter-spacing:.08em;color:var(--faint)}
+.meta b{color:var(--text)}
+#log{height:132px;overflow-y:auto;border:1px solid var(--line);background:#080f14;padding:9px 12px;font-size:12.5px}
+#log div{padding:1px 0;border-bottom:1px solid #0d161c}
+#log .t-bond{color:var(--cu)}
+#log .t-break{color:var(--na)}
+#log .t-dmg{color:var(--sr)}
+#log .t-sys{color:var(--faint)}
+#log .t-new{color:#fff;background:#14251f;padding:2px 6px;margin:2px 0}
+.overlay{position:fixed;inset:0;background:rgba(4,8,11,.93);display:flex;align-items:center;justify-content:center;padding:20px;z-index:50}
+.overlay .box{max-width:460px;text-align:center;border:1px solid var(--line2);background:var(--panel);padding:30px}
+.overlay h2{font-size:32px;margin-bottom:8px}
+.overlay p{color:var(--dim)}
+/* デッキ編集 */
+#builder{display:none;border:1px solid var(--line);background:var(--panel);padding:14px}
+.blist{display:grid;grid-template-columns:repeat(auto-fill,minmax(178px,1fr));gap:6px;margin:10px 0}
+.brow{display:flex;align-items:center;gap:8px;background:var(--panel2);border:1px solid var(--line);padding:5px 8px}
+.brow .n{flex:1;font-size:12px}
+.brow .n i{font-style:normal;font-family:"Chakra Petch";font-weight:700;color:var(--c,var(--text));margin-right:5px}
+.brow button{padding:2px 8px;font-size:13px;line-height:1.2}
+.brow .ct{font-family:"Chakra Petch";min-width:34px;text-align:center;font-weight:700;font-variant-numeric:tabular-nums}
+.brow .ct small{font-weight:400;color:var(--faint);font-size:10px}
+.brow.over{border-color:var(--bad);background:#1e1210}
+.brow.over .ct{color:var(--bad)}
+.mhead{border-top:1px solid var(--line);margin-top:12px;padding-top:12px;font-size:12.5px;color:var(--dim)}
+.mhead b{color:var(--text);font-family:"Chakra Petch";font-variant-numeric:tabular-nums}
+.mhead span{display:block;font-size:11.5px;color:var(--faint);margin-top:2px}
+.mlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(258px,1fr));gap:5px;margin-top:9px}
+.mrow{display:flex;align-items:baseline;gap:7px;flex-wrap:wrap;background:var(--panel2);
+  border:1px solid var(--line);border-left:3px solid var(--cu);padding:5px 9px;font-size:12px}
+.mrow.short{border-left-color:var(--na);opacity:.92}
+.mrow.near{border-left-color:var(--line2);opacity:.75}
+.mrow .eff{font-family:"Chakra Petch";font-weight:700;font-variant-numeric:tabular-nums;
+  color:var(--cu);min-width:34px}
+.mrow.short .eff{color:var(--na)}
+.mrow.near .eff{color:var(--faint)}
+.mrow .fm{font-family:"Chakra Petch";font-weight:700;color:var(--text)}
+.mrow .nm{color:var(--dim)}
+.mrow .pw{margin-left:auto;font-family:"Chakra Petch";font-size:11px;color:var(--faint);
+  font-variant-numeric:tabular-nums;white-space:nowrap}
+.mrow .tag{width:100%;font-size:11px;letter-spacing:.02em}
+.mrow .tag.fx{color:var(--k)}
+.mrow .tag.need{color:var(--dim)}
+.mrow .tag.lack{color:var(--na)}
+.legend{display:flex;gap:10px;flex-wrap:wrap;font-size:11px;color:var(--faint);font-family:"Chakra Petch";letter-spacing:.06em}
+.legend i{font-style:normal;width:9px;height:9px;display:inline-block;margin-right:4px}
+
+/* ---------- 図鑑 ---------- */
+[hidden]{display:none!important}
+.overlay.dex{align-items:flex-start;padding:16px;overflow-y:auto}
+.dexbox{width:min(1000px,100%);max-height:calc(100vh - 32px);display:flex;flex-direction:column;
+  background:var(--panel);border:1px solid var(--line2)}
+.dexhead{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:12px 14px;border-bottom:1px solid var(--line);background:#0b141b}
+.dexhead h2{font-size:20px;letter-spacing:.06em;margin-right:4px}
+.dexhead h2 span{color:var(--na)}
+.tabs{display:flex;gap:1px;background:var(--line)}
+.tab{padding:6px 14px;font-family:"Chakra Petch";letter-spacing:.06em;border:0;background:var(--panel2);border-radius:0}
+.tab.on{background:var(--na);color:#241000;font-weight:700}
+.tab.on:hover{background:var(--na);color:#241000}
+#dex-q{flex:1;min-width:140px;background:#08111a;border:1px solid var(--line2);color:var(--text);
+  padding:7px 10px;font-family:inherit;font-size:13px;border-radius:2px}
+#dex-q:focus{outline:1px solid var(--na);border-color:var(--na)}
+.dexbody{overflow-y:auto;padding:14px;display:grid;gap:8px;align-content:start}
+.dexbody.el{grid-template-columns:repeat(auto-fill,minmax(200px,1fr))}
+.dexbody.mol{grid-template-columns:repeat(auto-fill,minmax(244px,1fr))}
+.dexnote{grid-column:1/-1;font-size:12px;color:var(--faint);border-bottom:1px solid var(--line);padding-bottom:8px;margin-bottom:2px}
+.ent{background:var(--panel2);border:1px solid var(--line);border-left:3px solid var(--c,var(--line2));padding:10px 12px}
+.ent .top{display:flex;align-items:center;gap:8px}
+.dexatom{width:42px;height:42px;flex:none;color:var(--c,var(--dim));display:block}
+.dexatom svg{width:100%;height:100%;display:block}
+.ent .sy{font-family:"Chakra Petch";font-weight:700;font-size:26px;line-height:1.1;color:var(--c,var(--text))}
+.ent .nm{font-size:13px;font-weight:500}
+.ent .cat{margin-left:auto;font-size:10.5px;font-family:"Chakra Petch";letter-spacing:.1em;color:var(--faint)}
+.ent .stats{display:flex;gap:12px;margin-top:6px;font-family:"Chakra Petch";font-size:11.5px;color:var(--faint);
+  font-variant-numeric:tabular-nums;flex-wrap:wrap}
+.ent .stats b{color:var(--text);font-weight:700}
+.ent .sub{margin-top:6px;font-size:11.5px;color:var(--dim);line-height:1.6}
+.ent .sub em{font-style:normal;color:var(--cu)}
+.ent .fx{display:inline-block;margin-top:7px;font-size:11px;font-family:"Chakra Petch";letter-spacing:.04em;
+  padding:1px 8px;border:1px solid #43317a;background:#150f26;color:var(--k);border-radius:999px}
+.ent.mol{border-left-color:var(--cu)}
+.ent.mol .sy{font-size:20px;color:var(--cu)}
+.ent.und{border-left-color:var(--line2);opacity:.62}
+.ent.und .sy{color:var(--dim)}
+.ent .found{margin-left:auto;font-size:10px;font-family:"Chakra Petch";letter-spacing:.1em;color:var(--na)}
+.dexfoot{padding:9px 14px;border-top:1px solid var(--line);display:flex;gap:12px;align-items:center;flex-wrap:wrap;
+  font-size:11.5px;color:var(--faint);background:#0b141b}
+.prog{flex:1;min-width:120px;height:6px;background:#08111a;border:1px solid var(--line)}
+.prog i{display:block;height:100%;background:var(--cu)}
+@media(max-width:480px){
+  .card{width:50px;height:68px}
+  .slot{width:50px;height:68px}
+  .card .sym{font-size:20px}
+}
+</style>
+
+<div class="wrap">
+
+<!-- ================= タイトル ================= -->
+<section id="title-screen">
+  <header class="masthead">
+    <div class="eyebrow">ELEMENT BATTLE / AUTO-BONDING TCG</div>
+    <h1>オート<span>ボンド</span></h1>
+    <p>元素カードで戦うカードゲーム。分子になれば強い。——ただし<b>合成コマンドは存在しない</b>。並べた元素は手札の中で勝手にくっつき、より親和力の高い元素が隣に来れば、結合はあっさり組み替わる。あなたにできるのは「並べ替え」と「加熱・衝撃・触媒」だけだ。</p>
+  </header>
+
+  <div class="rules">
+    <div class="rule"><b>自動結合</b><p>カードを引く・動かすたびに隣接判定。親和力 <span class="num">30＋|電気陰性度差|×40</span> の大きい組から順に結合します。</p></div>
+    <div class="rule"><b>組み替え</b><p>より親和力の強い相手が隣に来ると、既存の結合を壊してくっつき直します。H–H に O が触れれば H₂ は割れて H₂O へ。</p></div>
+    <div class="rule"><b>安定＝ロック</b><p>空き価電子が尽き、既知の分子式に一致すると安定化。威力にボーナスが付き、もう余計な結合をしません。</p></div>
+    <div class="rule"><b>貴ガスは壁</b><p>He・Ne・Ar は絶対に結合しません。間に挟めば事故結合を防ぐ隔壁に。</p></div>
+    <div class="rule"><b>設置カード</b><p>白金・ウラン・タングステン・ネオジムは分子を作りません。使うと場に残り、行動回数+1・毎ターンの放射・不安定分子の安定化・自動圧縮を試合終了まで続けます。分子を覚えずに戦う軸です。</p></div>
+    <div class="rule"><b>大きい分子は手札が戻る</b><p>3原子以上の分子で攻撃すると、使った枚数−2枚を引き直します。8原子なら6枚。枚数を使う分子ほど、撃った後の立て直しが速くなります。</p></div>
+    <div class="rule"><b>できる操作は3つ</b><p>1ターン2行動。隣り合うカードの<b style="display:inline;color:var(--na)">入れ替え</b>、1枚<b style="display:inline;color:var(--na)">捨てて引く</b>、<b style="display:inline;color:var(--na)">特殊カード</b>の使用。合成はできません。</p></div>
+  </div>
+
+  <div>
+    <div class="lbl" style="margin-bottom:8px">デッキを選ぶ（30枚）</div>
+    <div class="decks" id="deck-picker"></div>
+  </div>
+
+  <div class="bar">
+    <div class="hint" id="deck-desc">デッキを選択してください。</div>
+    <button id="btn-dex">図鑑</button>
+    <button id="btn-build">デッキを編集</button>
+    <button class="primary" id="btn-start">対戦開始</button>
+  </div>
+
+  <div id="builder">
+    <div class="bar" style="border:0;padding:0 0 10px">
+      <div class="hint" id="b-status">合計 <b id="b-count">30</b> / 30 枚</div>
+      <span id="b-msg"></span>
+      <input id="b-name" placeholder="デッキ名" maxlength="20" autocomplete="off" aria-label="デッキ名">
+      <button id="b-save">保存</button>
+      <button id="b-reset">プリセットに戻す</button>
+      <button id="b-close">閉じる</button>
+    </div>
+    <div class="legend">
+      <span><i style="background:var(--nonmetal)"></i>非金属</span>
+      <span><i style="background:var(--halogen)"></i>ハロゲン</span>
+      <span><i style="background:var(--alkali)"></i>アルカリ金属</span>
+      <span><i style="background:var(--alkaline)"></i>アルカリ土類</span>
+      <span><i style="background:var(--metal)"></i>金属</span>
+      <span><i style="background:var(--metalloid)"></i>半金属</span>
+      <span><i style="background:var(--precious)"></i>貴金属</span>
+      <span><i style="background:var(--noble)"></i>貴ガス</span>
+      <span><i style="background:var(--support)"></i>支援元素</span>
+      <span><i style="background:var(--special)"></i>特殊</span>
+    </div>
+    <div class="blist" id="b-list"></div>
+    <div class="mhead" id="b-molhead"></div>
+    <div class="mlist" id="b-mols"></div>
+  </div>
+</section>
+
+<!-- ================= 対戦 ================= -->
+<section id="game-screen">
+  <div class="side foe">
+    <div class="sidehead">
+      <span class="who foe">相手</span>
+      <div class="hpbar foe"><div class="hpfill" id="foe-hp-fill"></div></div>
+      <span class="hpnum" id="foe-hp">30/30</span>
+      <div class="chips" id="foe-chips"></div>
+    </div>
+    <div class="hand mini" id="foe-hand"></div>
+  </div>
+
+  <div id="log"></div>
+
+  <div class="bar">
+    <div class="hint" id="hint">—</div>
+    <div class="meta">
+      <span>行動 <b id="acts">2</b>/2</span>
+      <span>山札 <b id="deck-n">0</b></span>
+    </div>
+    <button id="btn-dex2">図鑑</button>
+    <button id="btn-cancel" hidden>キャンセル</button>
+    <button id="btn-use" disabled>カードを使う</button>
+    <button id="btn-dump" disabled>捨てて引く</button>
+    <button id="btn-attack" disabled>攻撃</button>
+    <button class="primary" id="btn-end">ターン終了</button>
+  </div>
+
+  <div class="side me">
+    <div class="sidehead">
+      <span class="who mine">あなた</span>
+      <div class="hpbar mine"><div class="hpfill" id="my-hp-fill"></div></div>
+      <span class="hpnum" id="my-hp">30/30</span>
+      <div class="chips" id="my-chips"></div>
+    </div>
+    <div class="hand" id="my-hand"></div>
+  </div>
+</section>
+
+
+<!-- ================= 図鑑 ================= -->
+<div class="overlay dex" id="dex" hidden>
+  <div class="dexbox">
+    <header class="dexhead">
+      <h2>元素<span>図鑑</span></h2>
+      <div class="tabs">
+        <button class="tab on" data-tab="el">元素 17</button>
+        <button class="tab" data-tab="mol">分子 50</button>
+        <button class="tab" data-tab="sp">特殊 7</button>
+      </div>
+      <input id="dex-q" placeholder="検索：記号・名称・分子式・効果" autocomplete="off">
+      <button id="dex-close">閉じる</button>
+    </header>
+    <div class="dexbody el" id="dex-body"></div>
+    <div class="dexfoot">
+      <span>発見した分子 <b class="num" id="dex-found">0</b> / <span class="num" id="dex-total">50</span></span>
+      <span class="prog"><i id="dex-prog" style="width:0%"></i></span>
+      <button id="dex-clear" style="padding:4px 10px;font-size:11.5px">発見記録を消去</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+"use strict";
+/* =========================================================
+   データ
+   ========================================================= */
+const EL = {
+  H :{jp:"水素",      val:1, en:2.20, pw:1, cat:"nonmetal"},
+  C :{jp:"炭素",      val:4, en:2.55, pw:3, cat:"nonmetal"},
+  N :{jp:"窒素",      val:3, en:3.04, pw:3, cat:"nonmetal"},
+  O :{jp:"酸素",      val:2, en:3.44, pw:3, cat:"nonmetal"},
+  S :{jp:"硫黄",      val:2, en:2.58, pw:3, cat:"nonmetal"},
+  P :{jp:"リン",      val:3, en:2.19, pw:2, cat:"nonmetal"},
+  F :{jp:"フッ素",    val:1, en:3.98, pw:4, cat:"halogen"},
+  Cl:{jp:"塩素",      val:1, en:3.16, pw:3, cat:"halogen"},
+  Na:{jp:"ナトリウム",val:1, en:0.93, pw:2, cat:"alkali"},
+  K :{jp:"カリウム",  val:1, en:0.82, pw:2, cat:"alkali"},
+  Mg:{jp:"マグネシウム",val:2,en:1.31, pw:2, cat:"alkaline"},
+  Ca:{jp:"カルシウム",val:2, en:1.00, pw:2, cat:"alkaline"},
+  Fe:{jp:"鉄",        val:3, en:1.83, pw:4, cat:"metal"},
+  Si:{jp:"ケイ素",    val:4, en:1.90, pw:2, cat:"metalloid"},
+  Li:{jp:"リチウム",  val:1, en:0.98, pw:2, cat:"alkali"},
+  B :{jp:"ホウ素",    val:3, en:2.04, pw:2, cat:"metalloid"},
+  Al:{jp:"アルミニウム",val:3,en:1.61, pw:3, cat:"metal"},
+  Ti:{jp:"チタン",    val:4, en:1.54, pw:4, cat:"metal"},
+  Cu:{jp:"銅",        val:2, en:1.90, pw:4, cat:"metal"},
+  Zn:{jp:"亜鉛",      val:2, en:1.65, pw:3, cat:"metal"},
+  Br:{jp:"臭素",      val:1, en:2.96, pw:3, cat:"halogen"},
+  I :{jp:"ヨウ素",    val:1, en:2.66, pw:3, cat:"halogen"},
+  Ag:{jp:"銀",        val:1, en:1.93, pw:3, cat:"precious"},
+  Pb:{jp:"鉛",        val:2, en:2.33, pw:4, cat:"metal"},
+  Pt:{jp:"白金",      val:0, en:0,    pw:0, cat:"support", sup:"cata",
+      note:"設置カード。使うと場に残り、以後は毎ターンのドローが1枚増える（触媒＝反応速度）。手札の供給がそのまま増える。"},
+  U :{jp:"ウラン",    val:0, en:0,    pw:0, cat:"support", sup:"rad",
+      note:"設置カード。使うと場に残り、以後の自分のターン開始時に相手へ2ダメージ。重ねるほど増える。"},
+  W :{jp:"タングステン",val:0, en:0,   pw:0, cat:"support", sup:"fix",
+      note:"設置カード。使うと場に残り、以後は名前のない分子の威力減衰（0.6倍）が消え、さらに原子数×2の威力が上乗せされる。分子名を覚えずに戦う軸の中核。"},
+  Nd:{jp:"ネオジム",  val:0, en:0,    pw:0, cat:"support", sup:"mag",
+      note:"設置カード。使うと場に残り、以後は自分のターン開始時に手札の隙間が自動で詰まる。"},
+  He:{jp:"ヘリウム",  val:0, en:0,    pw:0, cat:"noble"},
+  Ne:{jp:"ネオン",    val:0, en:0,    pw:0, cat:"noble"},
+  Ar:{jp:"アルゴン",  val:0, en:0,    pw:0, cat:"noble"},
+};
+// 原子番号と電子配置（K殻から順に）
+const ATOM = {
+  H :{z:1,  sh:[1]},        He:{z:2,  sh:[2]},        C :{z:6,  sh:[2,4]},
+  N :{z:7,  sh:[2,5]},      O :{z:8,  sh:[2,6]},      F :{z:9,  sh:[2,7]},
+  Ne:{z:10, sh:[2,8]},      Na:{z:11, sh:[2,8,1]},    Mg:{z:12, sh:[2,8,2]},
+  Si:{z:14, sh:[2,8,4]},    P :{z:15, sh:[2,8,5]},    S :{z:16, sh:[2,8,6]},
+  Cl:{z:17, sh:[2,8,7]},    Ar:{z:18, sh:[2,8,8]},    K :{z:19, sh:[2,8,8,1]},
+  Ca:{z:20, sh:[2,8,8,2]},  Fe:{z:26, sh:[2,8,14,2]},
+  Li:{z:3,  sh:[2,1]},      B :{z:5,  sh:[2,3]},      Al:{z:13, sh:[2,8,3]},
+  Ti:{z:22, sh:[2,8,10,2]}, Cu:{z:29, sh:[2,8,18,1]}, Zn:{z:30, sh:[2,8,18,2]},
+  Br:{z:35, sh:[2,8,18,7]}, I :{z:53, sh:[2,8,18,18,7]},
+  Ag:{z:47, sh:[2,8,18,18,1]}, Pb:{z:82, sh:[2,8,18,32,18,4]},
+  Nd:{z:60, sh:[2,8,18,22,8,2]},  W :{z:74, sh:[2,8,18,32,12,2]},
+  Pt:{z:78, sh:[2,8,18,32,17,1]}, U :{z:92, sh:[2,8,18,32,21,9,2]},
+};
+// 殻の数に応じた半径（内側を詰めて外殻を描き切る）
+const SHELL_R = {
+  1:[22], 2:[20,34], 3:[18,31,43], 4:[16,27,37,47],
+  5:[14,24,33,41,48], 6:[13,22,30,37,43,48], 7:[12,20,27,33,39,44,48],
+};
+const ATOM_CACHE = {};
+// 核と電子殻だけに単純化した原子の図。最外殻の電子だけを明るく描く
+function atomSVG(k){
+  if(ATOM_CACHE[k]) return ATOM_CACHE[k];
+  const a = ATOM[k];
+  if(!a) return "";
+  const R = SHELL_R[a.sh.length] || [20, 31, 41, 48];
+  const shells = [], dots = [];
+  a.sh.forEach((n, i) => {
+    shells.push(`<circle cx="50" cy="50" r="${R[i]}" fill="none" stroke="currentColor" stroke-width="1" opacity=".3"/>`);
+    const outer = i === a.sh.length - 1;
+    for(let e = 0; e < n; e++){
+      const ang = (e / n) * Math.PI * 2 + i * 0.6;
+      const x = (50 + Math.cos(ang) * R[i]).toFixed(1);
+      const y = (50 + Math.sin(ang) * R[i]).toFixed(1);
+      const rr = (outer ? 3 : 2.1) * (n > 12 ? 0.62 : n > 8 ? 0.8 : 1);
+      dots.push(`<circle cx="${x}" cy="${y}" r="${rr.toFixed(2)}" fill="currentColor" opacity="${outer ? ".95" : ".4"}"/>`);
+    }
+  });
+  ATOM_CACHE[k] = `<svg viewBox="0 0 100 100" aria-hidden="true" focusable="false">` +
+    shells.join("") +
+    `<circle cx="50" cy="50" r="9.5" fill="currentColor" opacity=".28"/>` +
+    `<circle cx="50" cy="50" r="9.5" fill="none" stroke="currentColor" stroke-width="1.4" opacity=".7"/>` +
+    dots.join("") + `</svg>`;
+  return ATOM_CACHE[k];
+}
+const SP = {
+  heat :{jp:"加熱",  icon:"△", desc:"結合判定を活性化。親和力+40で全て組み替え直す。",     target:null},
+  cool :{jp:"冷却",  icon:"❄", desc:"対象を固定。以後結合も分解もせず、不安定でも減衰なし。",target:"mol"},
+  shock:{jp:"衝撃",  icon:"↯", desc:"対象の分子を単原子に粉砕。このターンは再結合しない。", target:"mol"},
+  cata :{jp:"触媒",  icon:"◇", desc:"選んだカードとその右隣を、価電子も安定も無視して強制結合。",target:"card"},
+  press:{jp:"圧縮",  icon:"⇥", desc:"手札の隙間を詰めて左に寄せ、結合を再判定。",           target:null},
+  uv   :{jp:"紫外線",icon:"✺", desc:"炭素を含む分子に威力+4を永続付与。",                  target:"mol"},
+  vac  :{jp:"真空",  icon:"○", desc:"対象を山札の底へ戻し、1枚引く。",                     target:"mol"},
+  supp :{jp:"補給",  icon:"⇊", desc:"山札から2枚引く。空きスロットが足りない分は廃棄。",       target:null},
+};
+// 既知分子（Hill式）: n=名称 b=威力ボーナス fx=効果
+const RECIPE = {
+  "H2":{n:"水素",b:2}, "O2":{n:"酸素",b:3,fx:"draw"}, "N2":{n:"窒素",b:4,fx:"armor3"},
+  "Cl2":{n:"塩素",b:4,fx:"poison2"}, "F2":{n:"フッ素",b:5,fx:"corrode"}, "O3":{n:"オゾン",b:5,fx:"poison1"},
+  "H2O":{n:"水",b:3,fx:"heal2"}, "H2O2":{n:"過酸化水素",b:5,fx:"corrode"},
+  "CO":{n:"一酸化炭素",b:3,fx:"poison2"}, "CO2":{n:"二酸化炭素",b:5},
+  "CH4":{n:"メタン",b:5,fx:"blast"}, "C2H2":{n:"アセチレン",b:6,fx:"blast"},
+  "C2H4":{n:"エチレン",b:7,fx:"draw"}, "C2H6":{n:"エタン",b:8},
+  "CH4O":{n:"メタノール",b:7,fx:"poison2"}, "C2H4O2":{n:"酢酸",b:9,fx:"corrode"},
+  "CH2O":{n:"ホルムアルデヒド",b:6,fx:"poison2"}, "CHN":{n:"シアン化水素",b:7,fx:"poison3"},
+  "CH5N":{n:"メチルアミン",b:7,fx:"poison2"}, "CH3Cl":{n:"クロロメタン",b:6,fx:"poison2"},
+  "CCl4":{n:"四塩化炭素",b:7,fx:"poison3"}, "CS2":{n:"二硫化炭素",b:6,fx:"blast"},
+  "H3N":{n:"アンモニア",b:5,fx:"poison2"}, "H3P":{n:"ホスフィン",b:5,fx:"poison3"},
+  "H2S":{n:"硫化水素",b:4,fx:"poison2"}, "H4Si":{n:"シラン",b:5,fx:"blast"},
+  "ClH":{n:"塩化水素",b:4,fx:"corrode"}, "FH":{n:"フッ化水素",b:5,fx:"corrode"},
+  "H2O4S":{n:"硫酸",b:10,fx:"corrode"}, "HNO3":{n:"硝酸",b:8,fx:"corrode"},
+  "NO":{n:"一酸化窒素",b:4}, "NO2":{n:"二酸化窒素",b:5,fx:"poison2"}, "N2O":{n:"亜酸化窒素",b:5,fx:"stun"},
+  "O2S":{n:"二酸化硫黄",b:5,fx:"poison2"}, "O2Si":{n:"二酸化ケイ素",b:6,fx:"armor4"},
+  "ClNa":{n:"塩化ナトリウム",b:5,fx:"pierce"}, "ClK":{n:"塩化カリウム",b:5,fx:"pierce"},
+  "HNaO":{n:"水酸化ナトリウム",b:6,fx:"corrode"}, "HKO":{n:"水酸化カリウム",b:6,fx:"corrode"},
+  "CaH2O2":{n:"水酸化カルシウム",b:6,fx:"corrode"},
+  "MgO":{n:"酸化マグネシウム",b:4,fx:"armor3"}, "CaO":{n:"酸化カルシウム",b:4,fx:"armor3"},
+  "Na2O":{n:"酸化ナトリウム",b:5,fx:"armor3"}, "CaF2":{n:"フッ化カルシウム",b:6,fx:"armor4"},
+  "CCaO3":{n:"炭酸カルシウム",b:6,fx:"armor4"},
+  "Fe2O3":{n:"酸化鉄(Ⅲ)",b:8,fx:"pierce"}, "Fe3O4":{n:"四酸化三鉄",b:10,fx:"pierce"},
+  "FeS":{n:"硫化鉄",b:6}, "ClFe":{n:"塩化鉄",b:6,fx:"corrode"},
+
+  /* ---- リチウム ---- */
+  "HLi":{n:"水素化リチウム",b:4,fx:"blast"}, "ClLi":{n:"塩化リチウム",b:5,fx:"pierce"},
+  "FLi":{n:"フッ化リチウム",b:6,fx:"corrode"}, "Li2O":{n:"酸化リチウム",b:5,fx:"armor3"},
+  "HLiO":{n:"水酸化リチウム",b:6,fx:"corrode"},
+  /* ---- ホウ素 ---- */
+  "BN":{n:"窒化ホウ素",b:6,fx:"armor4"}, "BF3":{n:"三フッ化ホウ素",b:7,fx:"corrode"},
+  "B2O3":{n:"酸化ホウ素",b:7,fx:"armor4"}, "B2H6":{n:"ジボラン",b:7,fx:"blast"},
+  /* ---- アルミニウム ---- */
+  "Al2O3":{n:"酸化アルミニウム",b:8,fx:"armor4"}, "AlCl3":{n:"塩化アルミニウム",b:7,fx:"corrode"},
+  "AlF3":{n:"フッ化アルミニウム",b:7,fx:"armor3"},
+  /* ---- チタン ---- */
+  "O2Ti":{n:"二酸化チタン",b:7,fx:"armor4"}, "Cl4Ti":{n:"四塩化チタン",b:8,fx:"corrode"},
+  /* ---- 銅 ---- */
+  "CuO":{n:"酸化銅(Ⅱ)",b:5}, "Cu2O":{n:"酸化銅(Ⅰ)",b:6,fx:"draw"},
+  "CuS":{n:"硫化銅",b:5}, "Cl2Cu":{n:"塩化銅",b:6,fx:"poison2"},
+  /* ---- 亜鉛 ---- */
+  "OZn":{n:"酸化亜鉛",b:5,fx:"armor3"}, "SZn":{n:"硫化亜鉛",b:5,fx:"draw"},
+  "Cl2Zn":{n:"塩化亜鉛",b:6,fx:"corrode"},
+  /* ---- 臭素 ---- */
+  "Br2":{n:"臭素",b:5,fx:"poison2"}, "BrH":{n:"臭化水素",b:5,fx:"corrode"},
+  "BrNa":{n:"臭化ナトリウム",b:5,fx:"pierce"}, "BrK":{n:"臭化カリウム",b:5,fx:"pierce"},
+  "AgBr":{n:"臭化銀",b:4,fx:"stun"},
+  /* ---- ヨウ素 ---- */
+  "I2":{n:"ヨウ素",b:5,fx:"poison1"}, "HI":{n:"ヨウ化水素",b:5,fx:"corrode"},
+  "INa":{n:"ヨウ化ナトリウム",b:5,fx:"pierce"}, "IK":{n:"ヨウ化カリウム",b:5,fx:"heal2"},
+  "AgI":{n:"ヨウ化銀",b:5,fx:"draw"}, "ClI":{n:"塩化ヨウ素",b:6,fx:"poison2"},
+  /* ---- 銀 ---- */
+  "AgCl":{n:"塩化銀",b:4,fx:"stun"}, "Ag2O":{n:"酸化銀",b:6,fx:"armor3"},
+  "Ag2S":{n:"硫化銀",b:5}, "AgNO3":{n:"硝酸銀",b:8,fx:"corrode"},
+  /* ---- 鉛 ---- */
+  "OPb":{n:"酸化鉛",b:6,fx:"armor4"}, "PbS":{n:"硫化鉛",b:6,fx:"poison2"},
+  "I2Pb":{n:"ヨウ化鉛",b:8,fx:"poison3"}, "Cl2Pb":{n:"塩化鉛",b:7,fx:"poison2"},
+};
+const FXTEXT = {
+  heal2:"水 → HP+2", draw:"ドロー+1", armor3:"装甲+3", armor4:"装甲+4",
+  poison1:"毒1", poison2:"毒2", poison3:"毒3", corrode:"腐食2", pierce:"装甲貫通",
+  blast:"爆発 +3／自傷1", stun:"相手の次の攻撃を封じる",
+};
+const PRESETS = {
+  inorganic:{name:"無機バランス", desc:"水・二酸化炭素・塩まで幅広く狙える標準構成。貴ガスの壁で事故結合も防げる。迷ったらこれ。",
+    list:{H:6,O:5,C:2,N:2,Cl:2,Na:2,S:2,Fe:1,Ne:2,Ar:1,heat:2,shock:1,cool:1,cata:1}},
+  organic:{name:"有機炉", desc:"炭素と水素で鎖を伸ばす。紫外線で威力を積み増す長期戦型。",
+    list:{H:10,C:7,O:3,N:2,heat:2,uv:2,cata:2,supp:1,vac:1}},
+  salt:{name:"塩と金属", desc:"電気陰性度差で殴る。結合が固く、冷却で不安定分子も無理やり通す。",
+    list:{Na:4,K:2,Cl:4,F:2,Ca:2,Mg:2,Fe:3,O:4,H:2,Ar:1,cool:2,shock:2}},
+  photo:{name:"銀と鉱石", desc:"銀・鉛・チタン・ホウ素など新顔を集めた変則デッキ。臭化銀の硬直で足を止め、硬い酸化物の装甲で受けきる。",
+    list:{Ag:2,Br:2,I:2,Na:3,O:5,H:5,Pb:2,Ti:2,B:2,Cu:1,cool:2,uv:2}},
+  acid:{name:"強酸", desc:"硫酸・硝酸を組み上げる高火力ロマン。腐食で削り切る。",
+    list:{H:8,O:8,S:3,N:3,Cl:2,heat:2,cata:2,vac:1,shock:1}},
+};
+// デッキ内の枚数上限（宇宙・地殻での存在比の多寡をそのまま採用枚数に反映）
+const LIMIT = {
+  H:10, O:8, C:8,
+  N:6, Cl:6, Na:6, S:6,
+  Ca:4, Mg:4, K:4, Fe:4, Si:4, P:4,
+  F:3, He:2, Ne:2, Ar:2,
+  Li:4, B:4, Al:4, Zn:4, Cu:4, Br:4, Ti:3, I:3, Pb:3, Ag:2,
+  U:3, Pt:2, W:4, Nd:2,
+};
+const DECKSIZE = 30;
+const deckCap = (k) => (k in LIMIT) ? LIMIT[k] : 3;   // 特殊カードは一律3枚
+function bonusOf(formula, n){
+  const r = RECIPE[formula];
+  return r ? r.b : 0;
+}
+const SLOTS = 8, MAXHP = 30, ACTIONS = 2;
+
+/* =========================================================
+   ユーティリティ
+   ========================================================= */
+let uid = 0;
+const mk = (key) => EL[key]
+  ? {uid:++uid, kind:"el", k:key, frozen:0, uv:0}
+  : {uid:++uid, kind:"sp", k:key, frozen:0, uv:0};
+const shuffle = (a) => {for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const clamp = (v,lo,hi) => Math.max(lo,Math.min(hi,v));
+
+function hill(syms){
+  const c = {};
+  syms.forEach(s => c[s] = (c[s]||0)+1);
+  const keys = Object.keys(c);
+  let order = [];
+  if(c.C){ order.push("C"); if(c.H) order.push("H"); }
+  const rest = keys.filter(k => !order.includes(k)).sort();
+  order = order.concat(rest);
+  return order.map(k => k + (c[k]>1 ? c[k] : "")).join("");
+}
+// 親和力（整数）
+function aff(a,b){
+  if(EL[a].val===0 || EL[b].val===0) return -1;
+  return 30 + Math.round(Math.abs(EL[a].en - EL[b].en) * 40);
+}
+
+/* =========================================================
+   状態
+   ========================================================= */
+function newPlayer(deckList, isAI){
+  const cards = [];
+  for(const k in deckList) for(let i=0;i<deckList[k];i++) cards.push(k);
+  return {
+    isAI, hp:MAXHP, armor:0, poison:0, corrode:0, stun:false, aura:{},
+    hand:new Array(SLOTS).fill(null), bonds:new Array(SLOTS-1).fill(false),
+    deck:shuffle(cards.map(mk)), discard:[], acts:ACTIONS,
+  };
+}
+let G = null, myDeckKey = "inorganic", custom = null, busy = false;
+const ui = {sel:null, selMol:null, pending:null, mode:"normal"};
+
+/* =========================================================
+   分子の解析
+   ========================================================= */
+function bondable(p,i){
+  const a = p.hand[i], b = p.hand[i+1];
+  return !!(a && b && a.kind==="el" && b.kind==="el" && EL[a.k].val>0 && EL[b.k].val>0);
+}
+function sanitize(p){ for(let i=0;i<SLOTS-1;i++) if(!bondable(p,i)) p.bonds[i]=false; }
+
+function groups(p){
+  sanitize(p);
+  const out = [];
+  let i = 0;
+  while(i < SLOTS){
+    if(!p.hand[i]){ i++; continue; }
+    let j = i;
+    while(j < SLOTS-1 && p.bonds[j]) j++;
+    const slots = []; for(let s=i;s<=j;s++) slots.push(s);
+    out.push(analyze(p, slots));
+    i = j + 1;
+  }
+  return out;
+}
+function analyze(p, slots){
+  const cells = slots.map(s => p.hand[s]);
+  const g = {slots, cells, key:slots[0], n:slots.length, sp:cells[0].kind==="sp"};
+  const fixed = !g.sp && tungstenAt(p);         // タングステンは結合を止めず、威力減衰だけ打ち消す
+  g.frozen = cells.some(c => c.frozen>0);
+  g.cooled = cells.every(c => c.frozen===2) || fixed;
+  g.uv = cells.some(c => c.uv);
+  if(g.sp){
+    const d = SP[cells[0].k];
+    g.name = d.jp; g.formula = d.icon; g.power = 0; g.free = 0; g.recipe = null;
+    return g;
+  }
+  const syms = cells.map(c => c.k);
+  g.formula = hill(syms);
+  g.recipe = RECIPE[g.formula] || null;
+  const cap = syms.reduce((s,k) => s + EL[k].val, 0);
+  g.free = g.recipe ? 0 : cap - 2*(g.n-1);
+  const base = syms.reduce((s,k) => s + EL[k].pw, 0);
+  if(g.recipe){
+    g.name = g.recipe.n; g.power = base + bonusOf(g.formula, g.n); g.stable = true;
+  }else if(g.n === 1){
+    g.name = EL[syms[0]].jp; g.power = base;
+  }else{
+    g.name = "不安定";
+    g.power = g.cooled ? base : Math.floor(base*0.6);
+    if(fixed) g.power += g.n * 2;             // タングステンは大きな分子ほど強く撃たせる
+  }
+  if(g.uv && syms.includes("C")) g.power += 4;
+  g.fx = g.recipe ? g.recipe.fx : null;
+  // 内部結合の弱点
+  g.weak = null;
+  for(const s of slots.slice(0,-1)){
+    const a = p.hand[s].k, b = p.hand[s+1].k, v = aff(a,b);
+    if(!g.weak || v < g.weak.v) g.weak = {i:s, v};
+  }
+  return g;
+}
+function groupAt(p, slot){ return groups(p).find(g => g.slots.includes(slot)); }
+
+/* =========================================================
+   結合解決（本作の心臓部）
+   ========================================================= */
+function isSupport(c){ return !!(c && c.kind === "el" && EL[c.k].sup); }
+// 設置：手札から場へ移し、以後ずっと効き続ける
+function installSupport(p, cell){
+  const slot = p.hand.indexOf(cell);
+  if(slot < 0) return;
+  const kind = EL[cell.k].sup;
+  p.hand[slot] = null; p.discard.push(cell); sanitize(p);
+  p.aura[kind] = (p.aura[kind] || 0) + 1;
+  log(`${EL[cell.k].jp} を設置した（${SUPTAG[kind]}${p.aura[kind] > 1 ? " ×" + p.aura[kind] : ""}）`, "t-bond", p);
+  resolve(p);
+}
+function tungstenAt(p){ return (p.aura.fix || 0) > 0; }
+function resolve(p, opt={}){
+  const heat = opt.heat ? 40 : 0;
+  const before = new Set(groups(p).filter(g=>g.recipe).map(g=>g.key+":"+g.formula));
+  let steps = 0;
+  for(let loop=0; loop<40; loop++){
+    const gs = groups(p);
+    const byslot = {};
+    gs.forEach(g => g.slots.forEach(s => byslot[s] = g));
+    let best = null;
+    for(let i=0;i<SLOTS-1;i++){
+      if(p.bonds[i] || !bondable(p,i)) continue;
+      const ga = byslot[i], gb = byslot[i+1];
+      if(!ga || !gb || ga === gb) continue;
+      if(ga.frozen || gb.frozen) continue;
+      const a = p.hand[i].k, b = p.hand[i+1].k;
+      const v = aff(a,b) + heat;
+      if(v <= 0) continue;
+      // 合体した姿が既知の分子なら、安定している相手にも結合できる（CO＋O→CO2 など）
+      const grows = MERGE_KNOWN && ga.n + gb.n <= SLOTS && ga.n + gb.n >= MERGE_MIN &&
+        !!RECIPE[hill(ga.cells.map(c => c.k).concat(gb.cells.map(c => c.k)))];
+      if((ga.free > 0 && gb.free > 0) || grows){
+        if(!best || v > best.gain) best = {type:"bond", i, gain:v, a, b};
+      }else{
+        // 組み替え判定：飽和側の最弱結合より十分強ければ壊す
+        for(const g of [ga,gb]){
+          if(g.free > 0 || !g.weak) continue;
+          const need = g.weak.v + (g.recipe ? 20 : 10);
+          if(v > need){
+            const gain = v - g.weak.v;
+            if(!best || gain > best.gain) best = {type:"break", i:g.weak.i, gain, a, b, from:g.name, at:i};
+          }
+        }
+      }
+    }
+    if(!best) break;
+    steps++;
+    if(best.type === "bond"){
+      p.bonds[best.i] = true;
+      log(`${best.a}–${best.b} が結合（親和力 ${aff(best.a,best.b)}）`, "t-bond", p);
+    }else{
+      p.bonds[best.i] = false;
+      log(`${best.from} の結合が切れた ── ${best.a}–${best.b} の方が強い`, "t-break", p);
+    }
+  }
+  // 新しくできた分子を報告
+  groups(p).forEach(g => {
+    if(g.recipe && !before.has(g.key+":"+g.formula)){
+      if(!p.isAI && !window.__quiet){
+        const isNew = !found.has(g.formula);
+        discover(g.formula);
+        if(isNew) log(`図鑑に ${g.name} を記録した（${found.size}/${Object.keys(RECIPE).length}）`, "t-sys");
+      }
+      log(`${g.formula} 生成 ── ${g.name}（威力 ${g.power}${g.fx ? " / "+FXTEXT[g.fx] : ""}）`, "t-new", p);
+    }
+  });
+  return steps;
+}
+
+/* =========================================================
+   ログ
+   ========================================================= */
+const logEl = () => document.getElementById("log");
+function log(msg, cls="", p=null){
+  if(window.__quiet) return;
+  const who = p ? (p.isAI ? "相手：" : "") : "";
+  const d = document.createElement("div");
+  d.className = cls; d.textContent = who + msg;
+  const L = logEl();
+  L.appendChild(d);
+  while(L.children.length > 60) L.removeChild(L.firstChild);
+  L.scrollTop = L.scrollHeight;
+}
+
+/* =========================================================
+   基本操作
+   ========================================================= */
+function drawCard(p, quiet){
+  if(p.deck.length === 0){
+    if(p.discard.length === 0){ log("山札が尽きた。", "t-sys", p); return null; }
+    p.deck = shuffle(p.discard); p.discard = [];
+    log("捨札をシャッフルして山札を再構築。", "t-sys", p);
+  }
+  const slot = p.hand.indexOf(null);
+  const c = p.deck.shift();
+  if(slot === -1){ p.discard.push(c); log("手札が満杯 ── 引いたカードは廃棄された。", "t-sys", p); return null; }
+  p.hand[slot] = c;
+  if(!quiet) log(`${c.kind==="el" ? c.k : SP[c.k].jp} を引いた（スロット${slot+1}）`, "", p);
+  resolve(p);
+  return c;
+}
+const ALLOW_DUMP = true;        // 「捨てて引く」行動（1行動）
+const ATTACK_DRAW = true;       // 攻撃時、使った枚数−2をドロー（大型分子の救済）
+const MERGE_KNOWN = true;       // 安定した分子でも、合体後が既知分子になるなら結合できる
+const MERGE_MIN = 4;            // ただし合体後の原子数がこの値以上のときに限る（3にすると二酸化炭素なども成長する）
+function dumpCard(p, slot){
+  const c = p.hand[slot];
+  if(!c) return;
+  p.hand[slot] = null;
+  p.discard.push(c);
+  sanitize(p);
+  log(`${cardLabel(c)} を捨てて引き直す`, "t-break", p);
+  drawCard(p);
+  resolve(p);
+}
+function compress(p){
+  const gs = groups(p);
+  const hand = new Array(SLOTS).fill(null), bonds = new Array(SLOTS-1).fill(false);
+  let w = 0;
+  for(const g of gs){
+    for(let k=0;k<g.cells.length;k++){
+      hand[w+k] = g.cells[k];
+      if(k>0) bonds[w+k-1] = true;
+    }
+    w += g.cells.length;
+  }
+  p.hand = hand; p.bonds = bonds;
+}
+function removeGroup(p, g, toDeckBottom){
+  g.slots.forEach(s => {
+    const c = p.hand[s];
+    c.frozen = 0;
+    if(toDeckBottom) p.deck.push(c); else p.discard.push(c);
+    p.hand[s] = null;
+  });
+  sanitize(p);
+}
+function applyDamage(src, dst, g){
+  let dmg = g.power;
+  let note = [];
+  const fx = g.fx;
+  if(fx === "blast"){ dmg += 3; }
+  let pierce = (fx === "pierce");
+  if(dst.corrode > 0){ dmg += 2; note.push("腐食+2"); }
+  if(!pierce && dst.armor > 0){
+    const cut = Math.min(dst.armor, dmg);
+    dmg -= cut; dst.armor -= cut; note.push(`装甲-${cut}`);
+  }else if(pierce && dst.armor > 0){ note.push("装甲貫通"); }
+  dst.hp = clamp(dst.hp - dmg, 0, MAXHP);
+  log(`${g.name}（${g.formula}）で攻撃 ── ${dmg} ダメージ${note.length ? "（"+note.join(" ")+"）" : ""}`, "t-dmg", src);
+  switch(fx){
+    case "heal2": src.hp = clamp(src.hp+2,0,MAXHP); log("水の効果：HP+2", "t-bond", src); break;
+    case "draw": drawCard(src); break;
+    case "armor3": src.armor += 3; log("装甲+3", "t-bond", src); break;
+    case "armor4": src.armor += 4; log("装甲+4", "t-bond", src); break;
+    case "poison1": case "poison2": case "poison3": {
+      const n = +fx.slice(-1); dst.poison += n; log(`相手に毒${n}`, "t-dmg", src); break; }
+    case "corrode": dst.corrode = 2; log("相手を腐食させた（2ターン、被ダメージ+2）", "t-dmg", src); break;
+    case "blast": src.hp = clamp(src.hp-1,0,MAXHP); log("爆発の反動で自傷1", "t-dmg", src); break;
+    case "stun": dst.stun = true; log("相手の次の攻撃を封じた", "t-dmg", src); break;
+  }
+  removeGroup(src, g, false);
+  // 大きい分子ほど手札が戻る（原子数−2枚をドロー）
+  if(ATTACK_DRAW && g.n >= 3){
+    const back = g.n - 2;
+    for(let i=0;i<back;i++) drawCard(src, true);
+    log(`${g.n}原子の分子を撃ったので ${back} 枚を引き直した`, "t-bond", src);
+    resolve(src);
+  }
+}
+function useSpecial(p, cell, target){
+  const kind = cell.k, d = SP[kind];
+  const slot = p.hand.indexOf(cell);
+  p.hand[slot] = null; p.discard.push(cell); sanitize(p);
+  log(`${d.jp} を使用`, "t-break", p);
+  switch(kind){
+    case "heat": resolve(p, {heat:true}); resolve(p); break;
+    case "cool": target.slots.forEach(s => p.hand[s] && (p.hand[s].frozen = 2));
+      log(`${target.name} を固定した`, "t-bond", p); break;
+    case "shock": target.slots.forEach(s => { if(p.hand[s]) p.hand[s].frozen = 1; });
+      target.slots.slice(0,-1).forEach(s => p.bonds[s] = false);
+      log(`${target.name} を単原子に粉砕した`, "t-break", p); break;
+    case "cata": {
+      const i = target; // スロット番号
+      if(bondable(p,i)){ p.bonds[i] = true;
+        log(`触媒により ${p.hand[i].k}–${p.hand[i+1].k} を強制結合`, "t-bond", p); }
+      break; }
+    case "press": compress(p); resolve(p); break;
+    case "uv": target.slots.forEach(s => p.hand[s] && (p.hand[s].uv = 1));
+      log(`${target.name} に紫外線照射（炭素分子なら威力+4）`, "t-bond", p); break;
+    case "supp": drawCard(p); drawCard(p); break;
+    case "vac": {
+      const nm = target.name; removeGroup(p, target, true);
+      log(`${nm} を山札の底へ戻した`, "t-sys", p); drawCard(p); break; }
+  }
+  if(kind !== "shock") resolve(p);
+}
+
+/* =========================================================
+   ターン進行
+   ========================================================= */
+function startTurn(p, opp){
+  p.acts = ACTIONS;
+  p.hand.forEach(c => { if(c && c.frozen === 1) c.frozen = 0; });
+  const rad = (p.aura.rad || 0) * 2;
+  if(rad > 0 && opp){
+    opp.hp = clamp(opp.hp - rad, 0, MAXHP);
+    log(`ウランの放射線で相手に ${rad} ダメージ`, "t-dmg", p);
+  }
+  if(p.aura.mag) { compress(p); resolve(p); }
+  if(p.poison > 0){
+    p.hp = clamp(p.hp - p.poison, 0, MAXHP);
+    log(`毒で ${p.poison} ダメージ`, "t-dmg", p);
+    p.poison--;
+  }
+  if(p.corrode > 0) p.corrode--;
+  if(p.armor > 0) p.armor = Math.max(0, p.armor - 1);
+  if(checkEnd()) return false;
+  drawCard(p);
+  for(let i = 0; i < (p.aura.cata || 0); i++) drawCard(p);   // 白金は毎ターンのドローを増やす
+  return true;
+}
+function endTurn(){
+  ui.sel = ui.selMol = ui.pending = null; ui.mode = "normal";
+  if(checkEnd()) return;
+  render();
+  busy = true;
+  setTimeout(aiTurn, 550);
+}
+function checkEnd(){
+  if(G.me.hp <= 0 || G.foe.hp <= 0){
+    render();
+    const win = G.foe.hp <= 0 && G.me.hp > 0;
+    const draw = G.me.hp <= 0 && G.foe.hp <= 0;
+    showEnd(draw ? "相打ち" : win ? "勝利" : "敗北",
+      draw ? "両者の反応が同時に暴走した。" :
+      win ? "相手の反応系を完全に停止させた。" : "あなたの反応系が崩壊した。");
+    busy = true;
+    return true;
+  }
+  return false;
+}
+function showEnd(t, s){
+  const o = document.createElement("div");
+  o.className = "overlay";
+  o.innerHTML = `<div class="box"><h2>${t}</h2><p>${s}</p><p style="margin-top:18px"><button class="primary" id="again">もう一度</button></p></div>`;
+  document.body.appendChild(o);
+  o.querySelector("#again").onclick = () => { o.remove(); location.reload(); };
+}
+
+/* =========================================================
+   AI
+   ========================================================= */
+function evalHand(p){
+  return groups(p).reduce((s,g) => s + (g.sp ? 0 : (g.recipe ? g.power + 3 : g.power * 0.4)), 0);
+}
+function cloneP(p){
+  const q = Object.assign({}, p);
+  q.hand = p.hand.map(c => c ? Object.assign({}, c) : null);
+  q.bonds = p.bonds.slice();
+  q.deck = p.deck.slice(); q.discard = p.discard.slice();
+  q.aura = Object.assign({}, p.aura);
+  return q;
+}
+function quietly(fn){                       // 試算中はログも図鑑記録も止める
+  const prev = window.__quiet;
+  window.__quiet = true;
+  try{ fn(); } finally { window.__quiet = prev; }
+}
+function cardLabel(c){ return c ? (c.kind === "el" ? c.k : SP[c.k].jp) : "空"; }
+
+// 入れ替えと特殊カードを同じ土俵で評価し、最も手札が良くなる一手を返す
+function aiBestAction(p){
+  const sup = p.hand.findIndex(isSupport);      // 設置は常に得（枠が空き、効果が残る）
+  if(sup >= 0) return {type:"install", slot:sup};
+  const base = evalHand(p), held = p.hand.filter(Boolean).length;
+  let best = null;
+  for(let i=0;i<SLOTS-1;i++){
+    if(!p.hand[i] && !p.hand[i+1]) continue;
+    const q = cloneP(p);
+    [q.hand[i], q.hand[i+1]] = [q.hand[i+1], q.hand[i]];
+    q.bonds[i] = false;
+    quietly(() => resolve(q));
+    const v = evalHand(q);
+    if(v > base + 0.6 && (!best || v > best.v)) best = {v, type:"swap", i};
+  }
+  if(ALLOW_DUMP) for(let slot=0; slot<SLOTS; slot++){
+    if(!p.hand[slot]) continue;
+    const q = cloneP(p);
+    q.hand[slot] = null;
+    quietly(() => { sanitize(q); resolve(q); });
+    // 引く内容は見ない（+0.6 は新しい1枚のおおまかな期待値）
+    const v = evalHand(q) + 0.6;
+    if(v > base + 0.5 && (!best || v > best.v)) best = {v, type:"dump", slot};
+  }
+  p.hand.forEach((c, slot) => {
+    if(!c || c.kind !== "sp") return;
+    const t = SP[c.k].target;
+    let cands;
+    if(t === "mol") cands = groups(p).filter(g => !g.sp && !(c.k === "shock" && g.n < 2)).map(g => g.key);
+    else if(t === "card"){ cands = []; for(let i=0;i<SLOTS-1;i++) if(bondable(p,i)) cands.push(i); }
+    else cands = [null];
+    cands.forEach(tk => {
+      const q = cloneP(p);
+      const cell = q.hand[slot];
+      if(!cell) return;
+      const target = (t === "mol") ? groupAt(q, tk) : (t === "card" ? tk : null);
+      if(t === "mol" && !target) return;
+      quietly(() => useSpecial(q, cell, target));
+      const v = evalHand(q) + (q.hand.filter(Boolean).length - held) * 0.4;
+      if(v > base + 1.2 && (!best || v > best.v)) best = {v, type:"sp", slot, tk, k:c.k};
+    });
+  });
+  return best;
+}
+function aiApply(p, best){
+  p.acts--;
+  if(best.type === "install"){
+    installSupport(p, p.hand[best.slot]);
+  }else if(best.type === "dump"){
+    dumpCard(p, best.slot);
+  }else if(best.type === "swap"){
+    const i = best.i;
+    const na = cardLabel(p.hand[i]), nb = cardLabel(p.hand[i+1]);
+    [p.hand[i], p.hand[i+1]] = [p.hand[i+1], p.hand[i]];
+    p.bonds[i] = false;
+    log(`${na} と ${nb} を入れ替えた`, "", p);
+    resolve(p);
+  }else{
+    const cell = p.hand[best.slot], t = SP[best.k].target;
+    const target = (t === "mol") ? groupAt(p, best.tk) : (t === "card" ? best.tk : null);
+    useSpecial(p, cell, target);
+  }
+}
+// 装甲・腐食・爆発まで含めた、実際に通るダメージ
+function effDamage(g, dst){
+  if(!dst) return g.power;
+  let dmg = g.power;
+  if(g.fx === "blast") dmg += 3;
+  if(dst.corrode > 0) dmg += 2;
+  if(g.fx !== "pierce" && dst.armor > 0) dmg -= Math.min(dst.armor, dmg);
+  return Math.max(0, dmg);
+}
+// 相手を倒しきれる分子があるなら、単体元素でも迷わず撃つ
+function aiLethal(p, dst){
+  if(!dst || dst.hp <= 0) return null;
+  const cands = groups(p).filter(g =>
+    !g.sp && g.power > 0 &&
+    !(g.fx === "blast" && p.hp <= 1) &&          // 反動で相打ちになる撃ち方は避ける
+    effDamage(g, dst) >= dst.hp);
+  if(!cands.length) return null;
+  cands.sort((a,b) => a.n - b.n || b.power - a.power);   // 同じ勝ちなら消費枚数の少ない方
+  return cands[0];
+}
+function aiAttackTarget(p, dst){
+  const kill = aiLethal(p, dst);
+  if(kill) return kill;
+  // 引き直せる枚数も価値に含める（1枚をおよそ1.5ダメージ相当とみなす）
+  const value = g => effDamage(g, dst) + (ATTACK_DRAW && g.n >= 3 ? (g.n - 2) * 1.5 : 0);
+  const cands = groups(p).filter(g => !g.sp && g.power > 0)
+    .sort((a,b) => value(b) - value(a) || b.power - a.power);
+  const top = cands[0];
+  if(!top) return null;
+  const full = p.hand.filter(Boolean).length >= SLOTS - 1;
+  const dmg = effDamage(top, dst);
+  // 追い詰められているときは小さな一撃でも通す
+  const desperate = p.hp <= 6 && dmg >= 2;
+  return (dmg >= 6 || full || desperate || (top.recipe && dmg >= 4)) ? top : null;
+}
+function aiTurn(){
+  const p = G.foe;
+  if(!startTurn(p, G.me)){ render(); return; }
+  render();
+  let step = 0;
+  const act = () => {
+    if(checkEnd()) return;
+    if(!p.stun){                                  // 詰みがあるなら並べ替えより先に撃つ
+      const kill = aiLethal(p, G.me);
+      if(kill){
+        applyDamage(p, G.me, kill);
+        render();
+        setTimeout(finish, 700);
+        return;
+      }
+    }
+    if(step++ < ACTIONS && p.acts > 0){
+      const best = aiBestAction(p);
+      if(best){
+        aiApply(p, best);
+        render();
+        setTimeout(act, 620);
+        return;
+      }
+    }
+    if(p.stun){ p.stun = false; log("硬直して攻撃できない。", "t-sys", p); finish(); return; }
+    const top = aiAttackTarget(p, G.me);
+    if(top){
+      applyDamage(p, G.me, top);
+      render();
+      setTimeout(finish, 700);
+    }else{ finish(); }
+  };
+  const finish = () => {
+    if(checkEnd()) return;
+    log("── あなたのターン ──", "t-sys");
+    busy = false;
+    if(!startTurn(G.me, G.foe)){ render(); return; }
+    if(G.me.stun){ G.me.stun = false; log("硬直：このターンは攻撃できない。", "t-sys"); G.me.noAttack = true; }
+    else G.me.noAttack = false;
+    render();
+  };
+  setTimeout(act, 550);
+}
+
+/* =========================================================
+   描画
+   ========================================================= */
+function cardEl(c, mini, p, slot){
+  const d = document.createElement("div");
+  d.className = "card" + (mini ? " mini" : "") + (c.kind === "sp" ? " sp" : "");
+  if(c.kind === "el"){
+    const e = EL[c.k];
+    d.style.setProperty("--c", `var(--${e.cat})`);
+    d.innerHTML = `<div class="atom">${atomSVG(c.k)}</div>
+      <div><div class="sym">${c.k}</div><div class="jp">${e.jp}</div></div>
+      <div class="foot"><span>${e.sup ? "設置/" + SUPTAG[e.sup] : ("・".repeat(Math.min(e.val,4)) || "—")}</span>` +
+      `<span class="pw">${e.sup ? "" : e.pw}</span></div>`;
+    d.title = e.sup ? `${e.jp}（設置カード）　${e.note}`
+      : `${e.jp}　原子番号${ATOM[c.k] ? ATOM[c.k].z : "—"}／価電子${e.val}／電気陰性度${e.en || "—"}／威力${e.pw}`;
+  }else{
+    const s = SP[c.k];
+    d.innerHTML = `<div><div class="sym">${s.icon}</div><div class="jp">${s.jp}</div></div>
+      <div class="foot"><span>特殊</span></div>`;
+    d.title = `${s.jp}：${s.desc}`;
+  }
+  if(!mini){
+    if(ui.sel === slot) d.classList.add("sel");
+    d.onclick = (ev) => { ev.stopPropagation(); clickCard(slot); };
+    d.tabIndex = 0;
+    d.onkeydown = (ev) => { if(ev.key === "Enter" || ev.key === " "){ ev.preventDefault(); clickCard(slot); } };
+  }
+  return d;
+}
+// 結合＝共有電子対。親和力が強いほど太く、電子は電気陰性度の高い側へ寄る
+function bondEl(p, i, j){
+  const a = p.hand[i].k, b = p.hand[j].k;
+  const v = aff(a, b);
+  const t = Math.max(0, Math.min(1, (v - 30) / 90));       // 30〜120 を 0〜1 に
+  const pull = EL[b].en - EL[a].en;                        // ＋なら右の原子が電子を引く
+  const shift = Math.max(-5, Math.min(5, pull * 2.2));
+  const r = (2.1 + t * 1.1).toFixed(2);
+  const d = document.createElement("div");
+  d.className = "bond";
+  d.innerHTML = `<svg viewBox="0 0 24 40" aria-hidden="true" focusable="false">
+    <line x1="0" y1="20" x2="24" y2="20" stroke="currentColor"
+      stroke-width="${(0.9 + t * 1.1).toFixed(2)}" opacity="${(0.3 + t * 0.35).toFixed(2)}"/>
+    <circle cx="${(8.5 + shift).toFixed(1)}" cy="20" r="${r}" fill="currentColor"/>
+    <circle cx="${(15.5 + shift).toFixed(1)}" cy="20" r="${r}" fill="currentColor"/>
+  </svg>`;
+  d.title = `${a}–${b}　共有電子対（親和力 ${v}${Math.abs(pull) >= 1.7 ? "／イオン結合性が強く電子が" + (pull > 0 ? b : a) + "側に偏る" : ""}）`;
+  return d;
+}
+function renderHand(p, el, mini){
+  el.innerHTML = "";
+  const gs = groups(p);
+  const own = {};
+  gs.forEach(g => g.slots.forEach(s => own[s] = g));
+  let i = 0;
+  while(i < SLOTS){
+    if(!p.hand[i]){
+      const s = document.createElement("div");
+      s.className = "slot" + (mini ? " mini" : "");
+      el.appendChild(s); i++; continue;
+    }
+    const g = own[i];
+    const box = document.createElement("div");
+    box.className = "mol" + (g.recipe ? " stable" : "") + (g.frozen ? " frozen" : "") + (g.uv ? " uv" : "");
+    const cap = document.createElement("div");
+    cap.className = "cap";
+    if(g.sp){
+      cap.innerHTML = `<span>${g.name}</span><span>${g.frozen ? "固定" : ""}</span>`;
+    }else{
+      cap.innerHTML = `<span>${g.formula}${g.recipe ? " "+g.name : (g.n>1 ? " 不安定" : "")}</span>
+        <span>${g.power > 0 ? "⚔"+g.power : ""}${g.free > 0 ? " 空"+g.free : ""}</span>`;
+    }
+    box.appendChild(cap);
+    const row = document.createElement("div");
+    row.className = "molrow";
+    g.slots.forEach((s,idx) => {
+      if(idx > 0) row.appendChild(bondEl(p, g.slots[idx-1], s));
+      row.appendChild(cardEl(p.hand[s], mini, p, s));
+    });
+    box.appendChild(row);
+    if(!mini){
+      if(ui.selMol === g.key) box.classList.add("sel");
+      if(ui.mode === "target" && targetOk(g)) box.classList.add("targetable", "clickable");
+      else if(!g.sp) box.classList.add("clickable");
+      box.onclick = () => clickMol(g);
+    }
+    el.appendChild(box);
+    i = g.slots[g.slots.length-1] + 1;
+  }
+}
+function chips(p, el){
+  el.innerHTML = "";
+  const add = (t, c) => { const s = document.createElement("span"); s.className = "chip "+c; s.textContent = t; el.appendChild(s); };
+  if(p.armor > 0) add(`装甲 ${p.armor}`, "armor");
+  if(p.poison > 0) add(`毒 ${p.poison}`, "poison");
+  if(p.corrode > 0) add(`腐食 ${p.corrode}`, "corrode");
+  if(p.stun) add("硬直", "stun");
+  for(const k in p.aura){
+    if(p.aura[k] > 0) add(SUPTAG[k] + (p.aura[k] > 1 ? " ×" + p.aura[k] : ""), "aura");
+  }
+}
+function render(){
+  const {me, foe} = G;
+  document.getElementById("my-hp").textContent = `${me.hp}/${MAXHP}`;
+  document.getElementById("foe-hp").textContent = `${foe.hp}/${MAXHP}`;
+  document.getElementById("my-hp-fill").style.width = (me.hp/MAXHP*100)+"%";
+  document.getElementById("foe-hp-fill").style.width = (foe.hp/MAXHP*100)+"%";
+  document.getElementById("acts").textContent = me.acts;
+  document.getElementById("deck-n").textContent = me.deck.length;
+  chips(me, document.getElementById("my-chips"));
+  chips(foe, document.getElementById("foe-chips"));
+  renderHand(foe, document.getElementById("foe-hand"), true);
+  renderHand(me, document.getElementById("my-hand"), false);
+
+  const selG = ui.selMol !== null ? groupAt(me, ui.selMol) : null;
+  const btnA = document.getElementById("btn-attack"), btnU = document.getElementById("btn-use"),
+        btnC = document.getElementById("btn-cancel"), btnE = document.getElementById("btn-end");
+  const selCell = ui.sel !== null ? me.hand[ui.sel] : null;
+  btnA.disabled = busy || !selG || selG.sp || selG.power <= 0 || me.noAttack;
+  document.getElementById("btn-dump").disabled = busy || ui.sel === null || me.acts <= 0 || ui.mode === "target";
+  btnU.disabled = busy || !(selCell && (selCell.kind === "sp" || isSupport(selCell))) || me.acts <= 0;
+  btnC.hidden = ui.mode !== "target";
+  btnE.disabled = busy;
+  const h = document.getElementById("hint");
+  if(busy) h.innerHTML = "相手のターン…";
+  else if(ui.mode === "target") h.innerHTML = `<b>${SP[ui.pending.k].jp}</b>：${SP[ui.pending.k].target === "card" ? "結合させたい<b>左側のカード</b>を選択" : "対象の<b>分子（上のラベル）</b>を選択"}`;
+  else if(me.noAttack) h.innerHTML = "硬直中：このターンは攻撃できません。並べ替えて次に備えましょう。";
+  else if(selG && !selG.sp){
+    const dmg = effDamage(selG, G.foe);
+    h.innerHTML = `<b>${selG.formula}</b>${selG.recipe ? "（"+selG.name+"）" : ""} 威力 <b>${selG.power}</b>` +
+      `${dmg !== selG.power ? ` → 実ダメージ <b>${dmg}</b>` : ""}` +
+      `${selG.fx ? " ／ "+FXTEXT[selG.fx] : ""}` +
+      `${dmg >= G.foe.hp ? ' ── <b style="color:var(--sr)">これで倒せます</b>' : " — 攻撃できます"}`;
+  }
+  else if(selCell && isSupport(selCell)) h.innerHTML = `<b>${EL[selCell.k].jp}</b>（設置）：${EL[selCell.k].note}`;
+  else if(selCell && selCell.kind === "sp") h.innerHTML = `<b>${SP[selCell.k].jp}</b>：${SP[selCell.k].desc}`;
+  else if(ui.sel !== null) h.innerHTML = "<b>隣のカード</b>をクリックで入れ替え（行動1）。噛み合わないカードは<b>捨てて引く</b>（行動1）。";
+  else h.innerHTML = "カードをクリックして選択 → 隣と入れ替え／捨てて引く。分子のラベルをクリックで攻撃対象に。";
+}
+
+/* =========================================================
+   入力
+   ========================================================= */
+function targetOk(g){
+  if(ui.mode !== "target") return false;
+  const t = SP[ui.pending.k].target;
+  if(t === "mol") return !g.sp && !(ui.pending.k === "shock" && g.n < 2);
+  return false;
+}
+function clickCard(slot){
+  if(busy) return;
+  const me = G.me;
+  if(ui.mode === "target"){
+    if(SP[ui.pending.k].target === "card"){
+      if(bondable(me, slot)){ me.acts--; useSpecial(me, ui.pending, slot); ui.mode = "normal"; ui.pending = null; ui.sel = null; render(); }
+      else log("そこは結合できません（右隣が空・特殊カード・貴ガス）。", "t-sys");
+      return;
+    }
+    return;
+  }
+  if(ui.sel === null){ ui.sel = slot; ui.selMol = null; render(); return; }
+  if(ui.sel === slot){ ui.sel = null; render(); return; }
+  if(Math.abs(ui.sel - slot) === 1){
+    if(me.acts <= 0){ log("行動回数が残っていません。", "t-sys"); return; }
+    const i = Math.min(ui.sel, slot);
+    const na = me.hand[i] ? (me.hand[i].kind==="el"?me.hand[i].k:SP[me.hand[i].k].jp) : "空";
+    const nb = me.hand[i+1] ? (me.hand[i+1].kind==="el"?me.hand[i+1].k:SP[me.hand[i+1].k].jp) : "空";
+    me.acts--;
+    [me.hand[i], me.hand[i+1]] = [me.hand[i+1], me.hand[i]];
+    me.bonds[i] = false;
+    log(`${na} と ${nb} を入れ替えた（残り行動 ${me.acts}）`, "");
+    resolve(me);
+    ui.sel = null; render();
+    return;
+  }
+  ui.sel = slot; ui.selMol = null; render();
+}
+function clickMol(g){
+  if(busy) return;
+  const me = G.me;
+  if(ui.mode === "target"){
+    if(!targetOk(g)){ log("その分子は対象にできません。", "t-sys"); return; }
+    me.acts--;
+    useSpecial(me, ui.pending, g);
+    ui.mode = "normal"; ui.pending = null; ui.sel = null; ui.selMol = null;
+    render(); return;
+  }
+  if(g.sp){ ui.sel = g.slots[0]; ui.selMol = null; render(); return; }
+  ui.selMol = (ui.selMol === g.key) ? null : g.key;
+  ui.sel = null; render();
+}
+function bindGame(){
+  document.getElementById("btn-attack").onclick = () => {
+    const g = groupAt(G.me, ui.selMol);
+    if(!g || g.sp) return;
+    applyDamage(G.me, G.foe, g);
+    endTurn();
+  };
+  document.getElementById("btn-use").onclick = () => {
+    const c = G.me.hand[ui.sel];
+    if(!c || G.me.acts <= 0) return;
+    if(isSupport(c)){ G.me.acts--; installSupport(G.me, c); ui.sel = null; render(); return; }
+    if(c.kind !== "sp") return;
+    const t = SP[c.k].target;
+    if(t){ ui.pending = c; ui.mode = "target"; render(); }
+    else { G.me.acts--; useSpecial(G.me, c, null); ui.sel = null; render(); }
+  };
+  document.getElementById("btn-dump").onclick = () => {
+    if(ui.sel === null || G.me.acts <= 0) return;
+    G.me.acts--;
+    dumpCard(G.me, ui.sel);
+    ui.sel = null;
+    render();
+  };
+  document.getElementById("btn-cancel").onclick = () => { ui.mode = "normal"; ui.pending = null; render(); };
+  document.getElementById("btn-end").onclick = () => { log("ターン終了。", "t-sys"); endTurn(); };
+}
+
+/* =========================================================
+   デッキ選択・編集
+   ========================================================= */
+function deckList(){ return custom ? custom : PRESETS[myDeckKey].list; }
+function countDeck(l){ return Object.values(l).reduce((a,b)=>a+b,0); }
+
+/* ---- 保存デッキ ---- */
+const DECKKEY = "autobond.decks.v1", MAXDECKS = 12;
+let saved = [], savedName = null;
+try{
+  const raw = localStorage.getItem(DECKKEY);
+  if(raw) saved = JSON.parse(raw).filter(d => d && d.name && d.list);
+}catch(e){ saved = []; }
+function persistDecks(){
+  try{ localStorage.setItem(DECKKEY, JSON.stringify(saved)); return true; }
+  catch(e){ return false; }
+}
+function normalize(l){
+  return JSON.stringify(Object.keys(l).filter(k => l[k] > 0).sort().map(k => [k, l[k]]));
+}
+function isDirty(){
+  if(!savedName || !custom) return false;
+  const d = saved.find(x => x.name === savedName);
+  return !d || normalize(d.list) !== normalize(custom);
+}
+function mixText(l){
+  return Object.keys(l).sort((a,b) => l[b]-l[a] || a.localeCompare(b))
+    .map(k => (EL[k] ? k : SP[k].icon) + l[k]).join(" ");
+}
+function msg(t, ok){
+  const m = document.getElementById("b-msg");
+  m.textContent = t;
+  m.style.color = ok ? "var(--good)" : "var(--bad)";
+  clearTimeout(msg.t); msg.t = setTimeout(() => { m.textContent = ""; }, 4000);
+}
+function saveDeck(){
+  const l = deckList();
+  if(!legalDeck(l)){ msg("30枚ちょうど・上限内にしてから保存できます", false); return; }
+  const input = document.getElementById("b-name");
+  const name = (input.value.trim() || "マイデッキ").slice(0,20);
+  const i = saved.findIndex(d => d.name === name);
+  if(i < 0 && saved.length >= MAXDECKS){ msg(`保存は${MAXDECKS}個までです。不要なデッキを削除してください`, false); return; }
+  const entry = {name, list:Object.assign({}, l), ts:Date.now()};
+  const backup = saved.slice();
+  if(i >= 0) saved[i] = entry; else saved.push(entry);
+  if(!persistDecks()){                       // 保存できなければ元に戻す
+    saved = backup;
+    msg("この環境では保存できません（ブラウザの設定を確認してください）", false);
+    return;
+  }
+  custom = Object.assign({}, l); savedName = name; input.value = name;
+  renderPicker(); renderBuilder();
+  msg(i >= 0 ? `「${name}」を上書き保存しました` : `「${name}」を保存しました`, true);
+}
+function loadDeck(name){
+  const d = saved.find(x => x.name === name);
+  if(!d) return;
+  custom = Object.assign({}, d.list); savedName = name;
+  document.getElementById("b-name").value = name;
+  renderPicker(); renderBuilder();
+}
+function deleteDeck(name){
+  saved = saved.filter(d => d.name !== name);
+  persistDecks();
+  if(savedName === name) savedName = null;
+  renderPicker(); renderBuilder();
+}
+
+function renderPicker(){
+  const wrap = document.getElementById("deck-picker");
+  wrap.innerHTML = "";
+  for(const k in PRESETS){
+    const b = document.createElement("button");
+    b.className = "deckcard";
+    b.setAttribute("aria-pressed", String(k === myDeckKey && !custom));
+    b.innerHTML = `<h3>${PRESETS[k].name}</h3><small>${PRESETS[k].desc}</small>`;
+    b.onclick = () => {
+      myDeckKey = k; custom = null; savedName = null;
+      document.getElementById("b-name").value = "";
+      renderPicker(); renderBuilder();
+    };
+    wrap.appendChild(b);
+  }
+  if(saved.length){
+    const h = document.createElement("div");
+    h.className = "pickhead";
+    h.textContent = `保存したデッキ（${saved.length}/${MAXDECKS}）`;
+    wrap.appendChild(h);
+    saved.slice().sort((a,b) => b.ts - a.ts).forEach(d => {
+      const active = savedName === d.name;
+      const b = document.createElement("button");
+      b.className = "deckcard saved";
+      b.setAttribute("aria-pressed", String(active));
+      b.innerHTML = `<h3>${d.name} ${active && isDirty() ? '<span class="dirty">未保存の変更</span>' : ""}</h3>
+        <small>${countDeck(d.list)}枚<span class="mix">${mixText(d.list)}</span></small>`;
+      b.onclick = () => loadDeck(d.name);
+      const del = document.createElement("span");   // button の入れ子を避ける
+      del.className = "del"; del.textContent = "×";
+      del.setAttribute("role", "button");
+      del.tabIndex = 0;
+      del.setAttribute("aria-label", `${d.name} を削除`);
+      const ask = (e) => {
+        e.preventDefault(); e.stopPropagation();
+        if(del.dataset.armed !== "1"){          // 1回目：確認待ちにする
+          del.dataset.armed = "1";
+          del.textContent = "削除？";
+          del.classList.add("armed");
+          clearTimeout(del._t);
+          del._t = setTimeout(() => {
+            if(!del.isConnected) return;
+            del.dataset.armed = ""; del.textContent = "×"; del.classList.remove("armed");
+          }, 4000);
+          return;
+        }
+        deleteDeck(d.name);
+      };
+      del.onclick = ask;
+      del.onkeydown = (e) => { if(e.key === "Enter" || e.key === " ") ask(e); };
+      b.appendChild(del);
+      wrap.appendChild(b);
+    });
+  }
+  const l = deckList();
+  const over = overLimit(l);
+  const desc = document.getElementById("deck-desc");
+  if(custom){
+    desc.innerHTML = (savedName ? `保存デッキ「${savedName}」` : "カスタムデッキ") +
+      `（${countDeck(l)}枚）` +
+      (over.length ? ` <span style="color:var(--bad)">── 枚数上限を超えたカードがあります</span>`
+        : isDirty() ? ` <span style="color:var(--na)">── 未保存の変更があります</span>` : "");
+  }else{
+    desc.textContent = PRESETS[myDeckKey].desc;
+  }
+  document.getElementById("btn-start").disabled = !legalDeck(l);
+}
+
+function overLimit(l){ return Object.keys(l).filter(k => l[k] > deckCap(k)); }
+function legalDeck(l){ return countDeck(l) === DECKSIZE && overLimit(l).length === 0; }
+function editing(){                       // 編集を始めた時点でプリセットを複製
+  if(!custom) custom = Object.assign({}, PRESETS[myDeckKey].list);
+  return custom;
+}
+// いまのデッキで作れる分子（枚数効率の高い順）
+function deckMolecules(l){
+  const kinds = Object.keys(l).filter(k => EL[k] && l[k] > 0);
+  const out = [];
+  for(const f in RECIPE){
+    const n = atomCount(f);
+    if(n > SLOTS) continue;
+    const at = parseF(f);
+    const missing = at.filter(([k]) => !kinds.includes(k)).map(([k]) => k);
+    if(missing.length > 1) continue;                       // 2種以上足りないものは出さない
+    const short = at.filter(([k,c]) => (l[k] || 0) < c);
+    const pw = molPower(f);
+    out.push({f, n, pw, eff:pw/n, at,
+      status: missing.length ? "near" : short.length ? "short" : "ok",
+      missing, short});
+  }
+  const rank = {ok:0, short:1, near:2};
+  out.sort((a,b) => rank[a.status] - rank[b.status] || b.eff - a.eff);
+  return out;
+}
+function renderMolecules(l){
+  const all = deckMolecules(l);
+  const ok = all.filter(m => m.status === "ok");
+  const short = all.filter(m => m.status === "short");
+  const near = all.filter(m => m.status === "near").slice(0, 8);
+  const head = document.getElementById("b-molhead");
+  head.innerHTML = `このデッキで作れる分子 <b>${ok.length}</b> 種` +
+    (short.length ? `　／　枚数が足りない <b>${short.length}</b> 種` : "") +
+    (near.length ? `　／　あと1種で届く <b>${near.length}</b> 種` : "") +
+    `<span>枚数効率（威力÷原子数）の高い順。並べ方の狙いを決める目安に。</span>`;
+  const box = document.getElementById("b-mols");
+  box.innerHTML = "";
+  [...ok, ...short, ...near].forEach(m => {
+    const r = RECIPE[m.f];
+    const d = document.createElement("div");
+    d.className = "mrow " + m.status;
+    const note = m.status === "near"
+      ? `<span class="tag need">${m.missing[0]} を入れると作れる</span>`
+      : m.status === "short"
+        ? `<span class="tag lack">${m.short.map(([k,c]) => `${k} が${c}枚必要（現在${l[k]||0}枚）`).join("、")}</span>`
+        : (r.fx ? `<span class="tag fx">${FXTEXT[r.fx]}</span>` : "");
+    d.innerHTML = `<span class="eff">${m.eff.toFixed(2)}</span>
+      <span class="fm">${m.f}</span><span class="nm">${r.n}</span>
+      <span class="pw">威力${m.pw} / ${m.n}枚</span>${note}`;
+    d.title = `${r.n}　構成：${m.at.map(([k,c]) => k + "×" + c).join(" ＋ ")}` +
+      (r.fx ? `／${FXTEXT[r.fx]}` : "");
+    box.appendChild(d);
+  });
+  if(!all.length){
+    box.innerHTML = `<div class="mrow"><span class="nm">元素を入れると、作れる分子がここに出ます。</span></div>`;
+  }
+}
+function renderBuilder(){
+  const l = custom || PRESETS[myDeckKey].list;
+  const total = countDeck(l);
+  const over = overLimit(l);
+  const box = document.getElementById("b-list");
+  box.innerHTML = "";
+  const all = Object.keys(EL).concat(Object.keys(SP));
+  all.forEach(k => {
+    const isEl = !!EL[k];
+    const cap = deckCap(k), have = l[k] || 0;
+    const row = document.createElement("div");
+    row.className = "brow" + (have > cap ? " over" : "");
+    row.style.setProperty("--c", isEl ? `var(--${EL[k].cat})` : "var(--special)");
+    row.innerHTML = `<span class="n"><i>${isEl ? k : SP[k].icon}</i>${isEl ? EL[k].jp : SP[k].jp}</span>`;
+    const minus = document.createElement("button"); minus.textContent = "−";
+    minus.disabled = have === 0;
+    minus.setAttribute("aria-label", `${isEl ? EL[k].jp : SP[k].jp} を1枚減らす`);
+    const ct = document.createElement("span");
+    ct.className = "ct";
+    ct.innerHTML = `${have}<small>/${cap}</small>`;
+    const plus = document.createElement("button"); plus.textContent = "＋";
+    plus.disabled = have >= cap || total >= DECKSIZE;
+    plus.setAttribute("aria-label", `${isEl ? EL[k].jp : SP[k].jp} を1枚増やす`);
+    minus.onclick = () => { const c = editing();
+      if(c[k]){ c[k]--; if(!c[k]) delete c[k]; } refresh(); };
+    plus.onclick = () => { const c = editing();
+      if((c[k]||0) < cap && countDeck(c) < DECKSIZE) c[k] = (c[k]||0)+1; refresh(); };
+    row.append(minus, ct, plus);
+    row.title = (isEl
+      ? `価電子${EL[k].val}／電気陰性度${EL[k].en||"—"}／威力${EL[k].pw}`
+      : SP[k].desc) + `／デッキ上限 ${cap}枚`;
+    box.appendChild(row);
+  });
+  const st = document.getElementById("b-status");
+  st.innerHTML = `合計 <b id="b-count">${total}</b> / ${DECKSIZE} 枚` +
+    (over.length
+      ? ` ── <span style="color:var(--bad)">${over.map(k =>
+          `${EL[k] ? EL[k].jp : SP[k].jp} が上限 ${deckCap(k)} 枚を超過`).join("、")}</span>`
+      : `　（枚数上限はカードごと。存在比の多い元素ほど多く積めます）`);
+  document.getElementById("b-count").style.color =
+    total === DECKSIZE ? "var(--good)" : "var(--bad)";
+  document.getElementById("btn-start").disabled = !legalDeck(l);
+  renderMolecules(l);
+  function refresh(){ renderBuilder(); renderPicker(); }
+}
+
+/* =========================================================
+   図鑑
+   ========================================================= */
+const DEXKEY = "autobond.dex.v1";
+const SUPTAG = {cata:"ドロー+1", rad:"放射", fix:"安定", mag:"磁力"};
+const CATJP = {nonmetal:"非金属", halogen:"ハロゲン", alkali:"アルカリ金属",
+  alkaline:"アルカリ土類金属", metal:"金属", metalloid:"半金属", precious:"貴金属",
+  noble:"貴ガス", support:"支援元素"};
+let found = new Set();
+try{ const raw = localStorage.getItem(DEXKEY); if(raw) found = new Set(JSON.parse(raw)); }catch(e){}
+function saveDex(){ try{ localStorage.setItem(DEXKEY, JSON.stringify([...found])); }catch(e){} }
+function discover(f){
+  if(!RECIPE[f] || found.has(f)) return;
+  found.add(f); saveDex(); updateDexBtn();
+}
+function updateDexBtn(){
+  const t = Object.keys(RECIPE).length;
+  document.querySelectorAll("#btn-dex,#btn-dex2").forEach(b => b.textContent = `図鑑 ${found.size}/${t}`);
+}
+function parseF(f){
+  const re = /([A-Z][a-z]?)(\d*)/g, out = []; let m;
+  while((m = re.exec(f))) if(m[1]) out.push([m[1], m[2] ? +m[2] : 1]);
+  return out;
+}
+function molPower(f){
+  const at = parseF(f);
+  const base = at.reduce((s,[k,n]) => s + (EL[k] ? EL[k].pw*n : 0), 0);
+  return base + bonusOf(f, atomCount(f));
+}
+function atomCount(f){ return parseF(f).reduce((s,[,n]) => s+n, 0); }
+function partners(sym){
+  return Object.keys(EL).filter(k => k !== sym && EL[k].val > 0 && EL[sym].val > 0)
+    .map(k => ({k, v:aff(sym,k)})).sort((a,b) => b.v - a.v).slice(0,3);
+}
+function molsWith(sym){
+  return Object.keys(RECIPE).filter(f => parseF(f).some(([k]) => k === sym))
+    .sort((a,b) => atomCount(a) - atomCount(b));
+}
+let dexTab = "el";
+function renderDex(){
+  const body = document.getElementById("dex-body");
+  const q = document.getElementById("dex-q").value.trim().toLowerCase();
+  body.className = "dexbody " + dexTab;
+  body.innerHTML = "";
+  const note = document.createElement("div");
+  note.className = "dexnote";
+  body.appendChild(note);
+  const hit = (...fields) => !q || fields.join(" ").toLowerCase().includes(q);
+  let n = 0;
+
+  if(dexTab === "el"){
+    note.textContent = "親和力 ＝ 30 ＋ |電気陰性度の差| × 40。値が大きいほど強く結びつき、既存の結合を割って奪い取ります。価電子は結合できる本数の上限です。";
+    Object.keys(EL).forEach(k => {
+      const e = EL[k];
+      if(!hit(k, e.jp, CATJP[e.cat], e.note || "", e.sup ? SUPTAG[e.sup] : "")) return;
+      n++;
+      const d = document.createElement("div");
+      d.className = "ent";
+      d.style.setProperty("--c", `var(--${e.cat})`);
+      const ps = partners(k);
+      const ms = molsWith(k);
+      d.innerHTML = `<div class="top"><span class="dexatom">${atomSVG(k)}</span>
+          <span class="sy">${k}</span><span class="nm">${e.jp}</span>
+          <span class="cat">${CATJP[e.cat]}</span></div>
+        <div class="stats"><span>原子番号 <b>${ATOM[k] ? ATOM[k].z : "—"}</b></span>
+          <span>価電子 <b>${e.val}</b></span>
+          <span>電気陰性度 <b>${e.en ? e.en.toFixed(2) : "—"}</b></span>
+          ${e.sup ? `<span>設置カード <b>${SUPTAG[e.sup]}</b></span>` : `<span>威力 <b>${e.pw}</b></span>`}
+          <span>デッキ上限 <b>${deckCap(k)}</b>枚</span></div>
+        <div class="sub">${e.sup ? e.note.replace("設置カード。", "<em>設置カード。</em>")
+          : "相性：" + (e.val === 0
+            ? "<em>結合しない</em>（手札の隔壁として使える）"
+            : ps.map(x => `${x.k} <em>${x.v}</em>`).join("　"))}</div>
+        ${ms.length ? `<div class="sub">主な分子：${ms.slice(0,6).map(f =>
+          found.has(f) ? `<em>${f}</em>` : f).join("　")}${ms.length>6 ? " …" : ""}</div>` : ""}`;
+      body.appendChild(d);
+    });
+  }else if(dexTab === "mol"){
+    note.textContent = "既知の分子式に一致すると「安定」になり、威力ボーナスと効果が付いて、それ以上むやみに結合しなくなります。原子数は手札8スロットに収まる必要があります。";
+    Object.keys(RECIPE)
+      .sort((a,b) => atomCount(a) - atomCount(b) || a.localeCompare(b))
+      .forEach(f => {
+        const r = RECIPE[f];
+        if(!hit(f, r.n, r.fx ? FXTEXT[r.fx] : "")) return;
+        n++;
+        const got = found.has(f);
+        const d = document.createElement("div");
+        d.className = "ent mol" + (got ? "" : " und");
+        d.innerHTML = `<div class="top"><span class="sy">${f}</span><span class="nm">${r.n}</span>
+            <span class="${got ? "found" : "cat"}">${got ? "発見済" : "未発見"}</span></div>
+          <div class="stats"><span>原子数 <b>${atomCount(f)}</b></span>
+            <span>威力 <b>${molPower(f)}</b></span></div>
+          <div class="sub">構成：${parseF(f).map(([k,c]) =>
+            `${k}<span style="color:var(--faint)">×${c}</span>`).join(" ＋ ")}</div>
+          ${r.fx ? `<span class="fx">${FXTEXT[r.fx]}</span>` : ""}`;
+        body.appendChild(d);
+      });
+  }else{
+    note.textContent = "特殊カードも手札スロットを1つ占有します（結合はしません）。使用は1行動。";
+    Object.keys(SP).forEach(k => {
+      const sp = SP[k];
+      if(!hit(k, sp.jp, sp.desc)) return;
+      n++;
+      const d = document.createElement("div");
+      d.className = "ent";
+      d.style.setProperty("--c", "var(--special)");
+      d.innerHTML = `<div class="top"><span class="sy">${sp.icon}</span><span class="nm">${sp.jp}</span>
+          <span class="cat">${sp.target === "mol" ? "対象：分子" : sp.target === "card" ? "対象：カード" : "対象なし"}</span></div>
+        <div class="stats"><span>デッキ上限 <b>${deckCap(k)}</b>枚</span></div>
+        <div class="sub">${sp.desc}</div>`;
+      body.appendChild(d);
+    });
+  }
+  if(n === 0){
+    const d = document.createElement("div");
+    d.className = "dexnote"; d.style.borderBottom = "0";
+    d.textContent = "該当する項目がありません。";
+    body.appendChild(d);
+  }
+  const t = Object.keys(RECIPE).length;
+  document.getElementById("dex-found").textContent = found.size;
+  document.getElementById("dex-total").textContent = t;
+  document.getElementById("dex-prog").style.width = (found.size/t*100) + "%";
+}
+function openDex(){
+  document.getElementById("dex").hidden = false;
+  renderDex();
+  document.getElementById("dex-q").focus();
+}
+function closeDex(){ document.getElementById("dex").hidden = true; }
+function bindDex(){
+  document.querySelector('.tab[data-tab="el"]').textContent = `元素 ${Object.keys(EL).length}`;
+  document.querySelector('.tab[data-tab="mol"]').textContent = `分子 ${Object.keys(RECIPE).length}`;
+  document.querySelector('.tab[data-tab="sp"]').textContent = `特殊 ${Object.keys(SP).length}`;
+  document.querySelectorAll(".tab").forEach(b => b.onclick = () => {
+    dexTab = b.dataset.tab;
+    document.querySelectorAll(".tab").forEach(x => x.classList.toggle("on", x === b));
+    renderDex();
+  });
+  document.getElementById("dex-q").oninput = renderDex;
+  document.getElementById("dex-close").onclick = closeDex;
+  document.getElementById("dex").onclick = (e) => { if(e.target.id === "dex") closeDex(); };
+  document.getElementById("dex-clear").onclick = () => {
+    if(!found.size) return;
+    found = new Set(); saveDex(); updateDexBtn(); renderDex();
+  };
+  document.addEventListener("keydown", (e) => {
+    if(e.key === "Escape" && !document.getElementById("dex").hidden) closeDex();
+  });
+  document.getElementById("btn-dex").onclick = openDex;
+  document.getElementById("btn-dex2").onclick = openDex;
+  updateDexBtn();
+}
+
+/* =========================================================
+   起動
+   ========================================================= */
+function startGame(){
+  const mine = Object.assign({}, deckList());
+  if(!legalDeck(mine)){
+    document.getElementById("builder").style.display = "block";
+    renderBuilder();
+    return;                                // 不正なデッキでは開始しない
+  }
+  const keys = Object.keys(PRESETS);
+  const foeDeck = PRESETS[keys[Math.floor(Math.random()*keys.length)]];
+  G = {me:newPlayer(mine, false), foe:newPlayer(Object.assign({}, foeDeck.list), true)};
+  G.me.noAttack = false;
+  document.getElementById("title-screen").style.display = "none";
+  document.getElementById("game-screen").style.display = "flex";
+  logEl().innerHTML = "";
+  log(`相手のデッキ：${foeDeck.name}`, "t-sys");
+  log("── 初期手札を配布 ──", "t-sys");
+  for(let i=0;i<3;i++){ drawCard(G.me, true); drawCard(G.foe, true); }
+  resolve(G.me); resolve(G.foe);
+  log("── あなたのターン ──", "t-sys");
+  G.me.acts = ACTIONS;
+  drawCard(G.me);
+  render();
+}
+function boot(){
+  renderPicker(); renderBuilder(); bindGame(); bindDex();
+  document.getElementById("btn-start").onclick = startGame;
+  document.getElementById("btn-build").onclick = () => {
+    const b = document.getElementById("builder");
+    const open = b.style.display !== "block";
+    b.style.display = open ? "block" : "none";
+    if(open){ document.getElementById("b-name").value = savedName || ""; renderBuilder(); }
+  };
+  document.getElementById("b-close").onclick = () => document.getElementById("builder").style.display = "none";
+  document.getElementById("b-reset").onclick = () => {
+    custom = null; savedName = null;
+    document.getElementById("b-name").value = "";
+    renderBuilder(); renderPicker();
+  };
+  document.getElementById("b-save").onclick = saveDeck;
+  document.getElementById("b-name").onkeydown = (e) => { if(e.key === "Enter") saveDeck(); };
+}
+boot();
+</script>
